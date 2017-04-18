@@ -20,32 +20,77 @@
 			<div class="mui-slider">
   				<div class="mui-slider-group mui-slider-loop">
     					<!--支持循环，需要重复图片节点-->
-    					<div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img src="4.jpg" /></a></div>
-    					<div class="mui-slider-item"><a href="#"><img src="1.jpg" /></a></div>
-    					<div class="mui-slider-item"><a href="#"><img src="2.jpg" /></a></div>
-    					<div class="mui-slider-item"><a href="#"><img src="3.jpg" /></a></div>
-    					<div class="mui-slider-item"><a href="#"><img src="4.jpg" /></a></div>
+    					<div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img id="slider_image_duplicate_end"  /></a></div>
+    					<div class="mui-slider-item"><a href="#"><img id="slider_image_0"  /></a></div>
+    					<div class="mui-slider-item"><a href="#"><img id="slider_image_1"  /></a></div>
+    					<div class="mui-slider-item"><a href="#"><img id="slider_image_2"  /></a></div>
+    					<div class="mui-slider-item"><a href="#"><img id="slider_image_3"  /></a></div>
     					<!--支持循环，需要重复图片节点-->
-    					<div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img src="1.jpg" /></a></div>
+    					<div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img id="slider_image_duplicate_start"  /></a></div>
   				</div>
 			</div>
 		</div>
 		<script type="text/javascript" charset="UTF-8">
 			mui.plusReady(function()
 			{
-				var params = {
-					"classid":"34",
-					"passage_number":"2"
-				};
-				var passages = jsonNewsRequest(jsonRequestAdress,params);
-				console.log(passages);
-				
 				var gallery = mui('.mui-slider');
 				gallery.slider({
   					interval:1000//自动轮播周期，若为0则不自动播放，默认为0；
 				});
-			});
-			
+				});
+				
+				
+				var params = {
+					"classid":"34",
+					"passage_number":"2"
+				};
+				jsonNewsRequest(jsonRequestAdress,params);
+				
+				/*
+				 * 访问服务器拿到json
+				 */
+				function jsonNewsRequest(url, params) {
+					var classid = params.classid;
+					var passage_number = params.passage_number;
+					console.log(passage_number);
+					//向服务器发送请求
+					console.log(url);
+					url = url + '?' + 'classid=' + classid + '&' + 'p=' + passage_number;
+					console.log(url);
+					mui.ajax(url, {
+						
+						dataType: 'json', //服务器返回json格式数据
+						type: 'get', //HTTP请求类型
+						timeout: 10000, //超时时间设置为10秒；
+						headers: { 'Content-Type': 'application/json' },
+						success: function(data) {
+							//服务器返回响应，根据响应结果，分析是否登录成功；
+							var passages = analyzeJsonData(data);
+							for(var passage_index = 0; passage_index < passages.length; ++passage_index)
+							{
+								var passage = passages[passage_index];
+								//处理轮播图片
+								if(passage_index < 4)
+								{
+									var slider_image_id = 'slider_image_' + passage_index;
+									document.getElementById(slider_image_id).src = passage.News_picture;
+									if(passage_index == 0 )
+									{
+										document.getElementById('slider_image_duplicate_start').src = passage.News_picture;
+									}
+									if(passage_index == 3)
+									{
+										document.getElementById('slider_image_duplicate_end').src = passage.News_picture;
+									}
+								}
+							}
+						},
+						error: function(xhr, type, errorThrown) {
+							//异常处理；
+							console.log(type);
+						}
+					});
+				}
 		</script>
 	</body>
 

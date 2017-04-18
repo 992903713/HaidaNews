@@ -2,35 +2,7 @@ var baseRequestAdress = 'http://www.catas.cn';
 var jsonRequestAdress = baseRequestAdress + '/appList/getNextPage';
 var modelNameAdress = baseRequestAdress + '/newdefault/getClassName';
 
-function jsonNewsRequest(url,params)
-{
-	
-	var classid = params.classid;
-	var passage_number = params.passage_number;
-	console.log(passage_number);
-	//向服务器发送请求
-	console.log(url);
-	url = url + '?' + 'classid='+classid + '&' +'p='+ passage_number;
-	console.log(url);
-	mui.ajax(url,{
-//		data:{
-//			classid:'34',
-//			p:'2'
-//		},
-		dataType:'json',//服务器返回json格式数据
-		type:'get',//HTTP请求类型
-		timeout:10000,//超时时间设置为10秒；
-		headers:{'Content-Type':'application/json'},	              
-		success:function(data){
-		//服务器返回响应，根据响应结果，分析是否登录成功；
-			return analyzeJsonData(data);
-		},
-		error:function(xhr,type,errorThrown){
-			//异常处理；
-			console.log(type);
-		}
-	});
-}
+
 function modelNameNewsRequest(url,params)
 {
 	
@@ -57,8 +29,19 @@ function passageModel(passage)
 	this.News_Title = passage.News_Title;
 	this.News_Author = passage.News_Author;
 	this.News_Content = passage.News_Content;
-	this.News_picture = this.News_Content.match(/^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?$/);//新闻图片
-	console.log(this.News_picture);
+	//匹配图片
+	var imgReg = /<img.*?(?:>|\/>)/gi;
+	//匹配src属性 
+	var srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
+	var arr = this.News_Content.match(imgReg);
+	if(arr !== null)
+	{
+		for (var i = 0; i < arr.length ; i++) {
+  			var src = arr[i].match(srcReg);
+		}
+	}
+	//此处留下一个bug，一篇文章可能有多张图片
+	this.News_picture = (src == undefined)? null:src[1];
 	this.News_Freind = passage.News_Freind;//这里json拼写错误
 	this.News_Link = passage.News_Link;
 	this.News_Click = passage.News_Click;
