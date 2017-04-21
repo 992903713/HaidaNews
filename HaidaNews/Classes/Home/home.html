@@ -13,53 +13,130 @@
 		<script src="../Others/Request/request.js"></script>
 		<script src="../../js/laytpl.js"></script>
 		<script type="text/javascript">
-			mui.init()
+			
+			var current_passage_number = 1;//当前新闻章节
+			mui.init(
+				{
+					pullRefresh: {
+						container:"#refreshContainer", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+						down : {
+							height: 50, //可选,默认50.触发下拉刷新拖动距离,
+							auto: true, //可选,默认false.自动下拉刷新一次
+							contentdown : "下拉可以刷新", //可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+							contentover: "释放立即刷新", //可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+							contentrefresh: "正在刷新...", //可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+							callback: pull_down_fresh_function //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+						},
+						up:{
+							height:50,//可选.默认50.触发上拉加载拖动距离
+      						auto:true,//可选,默认false.自动上拉加载一次
+      						contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+      						contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+      						callback :pull_up_fresh_function //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+						}
+					}
+				}
+			);
+			function pull_down_fresh_function() 
+			{
+     			//业务逻辑代码，比如通过ajax从服务器获取新数据；
+     			//注意，加载完新数据后，必须执行如下代码，注意：若为ajax请求，则需将如下代码放置在处理完ajax响应数据之后
+     			current_passage_number = 1;
+     			var params = {
+				"classid":"34",
+				"passage_number":current_passage_number
+				};
+				jsonNewsRequest(jsonRequestAdress,params,'down');
+			}
+			function pull_up_fresh_function()
+			{
+				var params = {
+					"classid":"34",
+					"passage_number":++current_passage_number
+				};
+				jsonNewsRequest(jsonRequestAdress,params,'up');
+			}
 		</script>
 		
+		/*
+		 * 视图层嵌套：顶层下拉刷新（图片轮播+新闻列表)
+		 */
+		
+		
 		<div class="mui-content">
-			<div class="mui-slider">
-  				<div class="mui-slider-group mui-slider-loop">
-    					<!--支持循环，需要重复图片节点-->
-    					<div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img id="slider_image_duplicate_end"  /></a></div>
-    					<div class="mui-slider-item"><a href="#"><img id="slider_image_0"  /></a></div>
-    					<div class="mui-slider-item"><a href="#"><img id="slider_image_1"  /></a></div>
-    					<div class="mui-slider-item"><a href="#"><img id="slider_image_2"  /></a></div>
-    					<div class="mui-slider-item"><a href="#"><img id="slider_image_3"  /></a></div>
-    					<!--支持循环，需要重复图片节点-->
-    					<div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img id="slider_image_duplicate_start"  /></a></div>
+			<!--下拉刷新容器-->
+			<div id="refreshContainer" class="mui-content mui-scroll-wrapper">
+  				<div class="mui-scroll">
+    					<!--数据列表-->
+    					<ul class="mui-table-view mui-table-view-chevron">
+    						<!--图片轮播-->
+      					<div class="mui-slider" id="slider_image_id">
+  							<div class="mui-slider-group mui-slider-loop">
+    								<!--支持循环，需要重复图片节点-->
+    								<div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img id="slider_image_duplicate_end" src="../Others/Images/blank.png" /><p id="slider_text_duplicate_end"></p></a></div>
+    								<div class="mui-slider-item"><a href="#"><img id="slider_image_0"  src="../Others/Images/blank.png"/><p id="slider_text_0"></p></a></div>
+    								<div class="mui-slider-item"><a href="#"><img id="slider_image_1" src="../Others/Images/blank.png" /><p id="slider_text_1"></p></a></div>
+    								<div class="mui-slider-item"><a href="#"><img id="slider_image_2"  src="../Others/Images/blank.png"/><p id="slider_text_2"></p></a></div>
+    								<div class="mui-slider-item"><a href="#"><img id="slider_image_3"  src="../Others/Images/blank.png"/><p id="slider_text_3"></p></a></div>
+    								<!--支持循环，需要重复图片节点-->
+    								<div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img id="slider_image_duplicate_start"  /><p id="slider_text_duplicate_start"></p></a></div>
+  							</div>
+  							<!--轮播指示器-->
+  							<div class="mui-slider-indicator">  
+                				<div class="mui-indicator mui-active"></div>  
+                				<div class="mui-indicator"></div>  
+                				<div class="mui-indicator"></div>  
+                				<div class="mui-indicator"></div>  
+            					</div>  
+							</div>
+							<!--新闻列表 -->
+							<div id="passageTableViewListDIV"></div>
+    					</ul>
   				</div>
-  				<div class="mui-slider-indicator">  
-                <div class="mui-indicator mui-active"></div>  
-                <div class="mui-indicator"></div>  
-                <div class="mui-indicator"></div>  
-                <div class="mui-indicator"></div>  
-            </div>  
 			</div>
+		</div>
+
 			
-			<div id="newsTableViewListDIV"></div>
-				<script id="newsTableViewListTPL" type="text/html">
-				
+		<!-- 处理新闻列表-->
+		<script id="passageTableViewListTPL" type="text/html">
 					<ul class="mui-table-view">
-						{{# for(var newsIndex = 0; newsIndex < d.length; ++newsIndex){ }}
-								<li class="mui-table-view-cell">
-									{{
-										d[newsIndex].News_Title
-									}}
+						{{# for(var newsIndex = 4; newsIndex < d.length; ++newsIndex){ }}
+								<li class="mui-table-view-cell mui-media">
+									<a class="mui-navigate-right" href="javascript:;">
+										<img class="mui-media-object mui-pull-left" src="{{ d[newsIndex].News_picture}}">
+										<div class="mui-media-body">
+											{{
+												d[newsIndex].News_Title
+											}}
+										</div>
+									</a>
+									
 								</li>
 							
 						{{# } }}  			
-
 					</ul>
 				</script>
-
-			
-		</div>
-		
-		
 		
 		<script type="text/javascript" charset="UTF-8">
 			mui.plusReady(function()
 			{
+				/*
+				 * 新闻数据总数组
+				 */
+				var total_passages = [];
+				/*
+				 * 1.查找新闻缓存，有则加载
+				 */
+				total_passages = localStorage.getItem("passages");
+
+				/*
+				 * 2.刷新页面，向服务器拉取最新数据
+				 */
+				
+				/*
+				 * 3.新闻本地存储
+				 */
+				document.getElementById("slider_image_id").style.height = '150px';
 				var gallery = mui('.mui-slider');
 				gallery.slider({
   					interval:1000//自动轮播周期，若为0则不自动播放，默认为0；
@@ -67,16 +144,12 @@
 				});
 				
 				
-				var params = {
-					"classid":"34",
-					"passage_number":"2"
-				};
-				jsonNewsRequest(jsonRequestAdress,params);
+				
 				
 				/*
 				 * 访问服务器拿到json
 				 */
-				function jsonNewsRequest(url, params) {
+				function jsonNewsRequest(url, params,up_or_down) {
 					var classid = params.classid;
 					var passage_number = params.passage_number;
 					console.log(passage_number);
@@ -92,41 +165,67 @@
 						headers: { 'Content-Type': 'application/json' },
 						success: function(data) {
 							//服务器返回响应
+							//设置laytpl数据源
 							var passages = analyzeJsonData(data);
 							console.log(passages);
-							var newsTableViewList = document.getElementById("newsTableViewListTPL").innerHTML;
+							var passageTableViewList = document.getElementById("passageTableViewListTPL").innerHTML;
 			
-							laytpl(newsTableViewList).render(passages,function(html)
+							laytpl(passageTableViewList).render(passages,function(html)
 							{
-								document.getElementById("newsTableViewListDIV").innerHTML = html;
+								document.getElementById("passageTableViewListDIV").innerHTML = html;
 							});
 							
-//							for(var passage_index = 0; passage_index < passages.length; ++passage_index)
-//							{
-//								var passage = passages[passage_index];
-//								处理轮播图片
-//								if(passage_index < 4)
-//								{
-//									var slider_image_id = 'slider_image_' + passage_index;
-//									document.getElementById(slider_image_id).src = passage.News_picture;
-//									if(passage_index == 0 )
-//									{
-//										document.getElementById('slider_image_duplicate_start').src = passage.News_picture;
-//									}
-//									if(passage_index == 3)
-//									{
-//										document.getElementById('slider_image_duplicate_end').src = passage.News_picture;
-//									}
-//								}
-								//处理tableViewCell
+							for(var passage_index = 0; passage_index < 4; ++passage_index)
+							{
+									var passage = passages[passage_index];
+									//处理轮播图片
+									var slider_image_id = 'slider_image_' + passage_index;
+									var slider_text_id = 'slider_text_' + passage_index;
+									document.getElementById(slider_image_id).src = passage.News_picture;
+									document.getElementById(slider_text_id).innerText = passage.News_Title;
+
+									if(passage_index == 0 )
+									{
+										document.getElementById('slider_image_duplicate_start').src = passage.News_picture;
+										document.getElementById('slider_text_duplicate_start').innerText = passage.News_Title;
+
+									}
+									if(passage_index == 3)
+									{
+										document.getElementById('slider_image_duplicate_end').src = passage.News_picture;
+										document.getElementById('slider_text_duplicate_end').innerText = passage.News_Title;
+
+									}
 								
-								
-								
-//							}
+							}
+							
+							/*
+							 * 新闻本地存储
+							 */
+							localStorage.setItem("passages",passages);
+							localStorage.setItem("latestNewsID",passages[0].NewsID);
+							
+							if(up_or_down == 'down')
+							{
+								mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+							}else{
+								mui('#refreshContainer').pullRefresh().endPullupToRefresh();
+
+							}
+
 						},
 						error: function(xhr, type, errorThrown) {
 							//异常处理；
 							console.log(type);
+							if(up_or_down == 'down')
+							{
+								mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+							}else{
+								mui('#refreshContainer').pullRefresh().endPullupToRefresh();
+
+							}
+							mui.toast('网络连接超时');
+
 						}
 					});
 				}

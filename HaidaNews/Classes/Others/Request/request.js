@@ -38,6 +38,7 @@ function passageModel(passage)
 	{
 		for (var i = 0; i < arr.length ; i++) {
   			var src = arr[i].match(srcReg);
+  			console.log(src[1]);
 		}
 	}
 	//此处留下一个bug，一篇文章可能有多张图片
