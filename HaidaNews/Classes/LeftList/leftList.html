@@ -7,7 +7,7 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<link href="../../css/mui.min.css" rel="stylesheet" />
 		<style>
-			li {margin:0; padding:0; list-sytle:none;}
+			li {margin:0; padding:0; list-sytle:none;height: 70px;}
 			li a{line-height: 50px;}
 			li img{height:50px; padding: 5px;}
 			li a span {
@@ -37,6 +37,7 @@
 			mui.init()
 		</script>
 		
+
 		<div class="mui-content">
 			<ul class="mui-table-view ">
 				<li class="mui-table-view-cell mui-media">
@@ -45,44 +46,94 @@
 
 				</li>
 				<li class="mui-table-view-cell mui-media">
-					<a href="javascript:;" class="mui-navigate-right">
+					<a href="javascript:;" class="mui-navigate-right" onclick="showPassages('4')">
 						<img src="../images/setting.png">
 						 <div class="mui-media-body">重要新闻</div>
 					</a>
 				</li>
 				<li class="mui-table-view-cell mui-media">
-					<a href="javascript:;" class="mui-navigate-right">
+					<a href="javascript:;" class="mui-navigate-right" onclick="showPassages('9')">
 						<img src="../images/setting.png">
 						 <div class="mui-media-body">媒体报道</div>
 					</a>
 				</li>
 				<li class="mui-table-view-cell mui-media">
-					<a href="javascript:;" class="mui-navigate-right">
+					<a href="javascript:;" class="mui-navigate-right" onclick="showPassages('17')">
 						<img src="../images/setting.png">
 						 <div class="mui-media-body">通知公告</div>
 					</a>
 				</li>
 				<li class="mui-table-view-cell mui-media">
-					<a href="javascript:;" class="mui-navigate-right">
+					<a href="javascript:;" class="mui-navigate-right" onclick="showPassages('44')">
 						<img src="../images/setting.png">
 						 <div class="mui-media-body">院所动态</div>
 					</a>
 				</li>
 				<li class="mui-table-view-cell mui-media">
-					<a href="javascript:;" class="mui-navigate-right">
+					<a href="javascript:;" class="mui-navigate-right" onclick="showPassages('230')">
 						<img src="../images/setting.png">
 						 <div class="mui-media-body">热区热点</div>
 					</a>
 				</li>
 				<li class="mui-table-view-cell mui-media">
-					<a href="javascript:;" class="mui-navigate-right">
+					<a href="javascript:;" class="mui-navigate-right" onclick="showPassages('362')">
 						<img src="../images/setting.png">
 						 <div class="mui-media-body">学术活动</div>
 					</a>
 				</li>
 			</ul>
 		</div>
-		
+
+		<script type="text/javascript">
+			
+			function showPassages(classid)
+			{
+				var leftList = plus.webview.currentWebview();
+			
+				var main = null;
+				// 防止快速点击可能导致多次创建
+				main = plus.webview.getWebviewById(plus.runtime.appid);
+				var showmain = window.showmain;
+				var mainstart = window.mainstart;
+				if(showmain == null )
+				{
+					showmain = true;
+				}
+				console.log(showmain);
+				if(showmain){
+				
+					main.setStyle({
+						mask: 'none',
+						left: '0',
+						transition: {
+							duration: 100
+						}
+					});
+					leftList.hide();
+					showmain = false;
+					localStorage.setItem('classid',classid);
+					
+					var list = plus.webview.currentWebview().opener();
+					mui.fire(list,'refresh');
+					
+				}
+				
+//				else{
+//					// 创建侧滑页面
+//					// 侧滑页面加载后显示（避免白屏）
+//					showmain = true;
+//					leftList.show('slide-in-left',200);
+//					main.setStyle({
+//						mask: 'rgba(0,0,0,0.2)',
+//						//left: '70%',
+//						transition: {
+//							duration: 150
+//						}
+//					});
+//				}
+
+			}
+		</script>
 	</body>
 
 </html>

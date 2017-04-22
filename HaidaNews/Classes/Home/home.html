@@ -13,8 +13,18 @@
 		<script src="../Others/Request/request.js"></script>
 		<script src="../../js/laytpl.js"></script>
 		<script type="text/javascript">
+			var scroller = [];
+			var newestNewsID = localStorage.getItem("newestNewsID");//当前最新新闻ID
+			if(newestNewsID == null)
+			{
+				newestNewsID = 1000;
+			}
 			
-			var current_passage_number = 1;//当前新闻章节
+			var oldestNewsID = localStorage.getItem("oldestNewsID");//当前最旧新闻ID
+			if(oldestNewsID == null)
+			{
+				oldestNewsID = 0;
+			}
 			mui.init(
 				{
 					pullRefresh: {
@@ -37,24 +47,39 @@
 					}
 				}
 			);
+			
+
 			function pull_down_fresh_function() 
 			{
+				if(scroller.length == 0)
+				{
+					scroller.push(this);
+				}
      			//业务逻辑代码，比如通过ajax从服务器获取新数据；
      			//注意，加载完新数据后，必须执行如下代码，注意：若为ajax请求，则需将如下代码放置在处理完ajax响应数据之后
-     			current_passage_number = 1;
+     			var currentClassID = localStorage.getItem('classid');
+     			if(currentClassID == null)
+     			{
+     				currentClassID = '34';
+     			}
      			var params = {
-				"classid":"34",
-				"passage_number":current_passage_number
-				};
-				jsonNewsRequest(jsonRequestAdress,params,'down');
+				"classid":currentClassID,
+				"upOrdown":"up",
+				"pagesize":"25",
+				"newsID":newestNewsID
+     			};
+				jsonNewsRequest(jsonRequestAdress,params,'up');
 			}
 			function pull_up_fresh_function()
 			{
+				var currentClassID = localStorage.getItem('classid');
 				var params = {
-					"classid":"34",
-					"passage_number":++current_passage_number
+					"classid":currentClassID,
+					"upOrdown":"down",
+					"pagesize":"25",
+					"newsID":oldestNewsID,
 				};
-				jsonNewsRequest(jsonRequestAdress,params,'up');
+				jsonNewsRequest(jsonRequestAdress,params,'down');
 			}
 		</script>
 		
@@ -120,6 +145,15 @@
 		<script type="text/javascript" charset="UTF-8">
 			mui.plusReady(function()
 			{
+				
+				document.getElementById("slider_image_id").style.height = '150px';
+				var gallery = mui('.mui-slider');
+				gallery.slider({
+  					interval:1000//自动轮播周期，若为0则不自动播放，默认为0；
+				});
+				});
+				console.log(newestNewsID);
+				console.log(oldestNewsID);
 				/*
 				 * 新闻数据总数组
 				 */
@@ -128,34 +162,54 @@
 				 * 1.查找新闻缓存，有则加载
 				 */
 				total_passages = localStorage.getItem("passages");
+				if(total_passages !== null)
+				{
+					var passageTableViewList = document.getElementById("passageTableViewListTPL").innerHTML;
+			
+							laytpl(passageTableViewList).render(total_passages,function(html)
+							{
+								document.getElementById("passageTableViewListDIV").innerHTML = html;
+							});
+							
+							for(var passage_index = 0; passage_index < 4; ++passage_index)
+							{
+									var passage = total_passages[passage_index];
+									//处理轮播图片
+									var slider_image_id = 'slider_image_' + passage_index;
+									var slider_text_id = 'slider_text_' + passage_index;
+									document.getElementById(slider_image_id).src = passage.News_picture;
+									document.getElementById(slider_text_id).innerText = passage.News_Title;
 
+									if(passage_index == 0 )
+									{
+										document.getElementById('slider_image_duplicate_start').src = passage.News_picture;
+										document.getElementById('slider_text_duplicate_start').innerText = passage.News_Title;
+
+									}
+									if(passage_index == 3)
+									{
+										document.getElementById('slider_image_duplicate_end').src = passage.News_picture;
+										document.getElementById('slider_text_duplicate_end').innerText = passage.News_Title;
+
+									}
+								
+							}
+				}
+				
 				/*
 				 * 2.刷新页面，向服务器拉取最新数据
 				 */
-				
-				/*
-				 * 3.新闻本地存储
-				 */
-				document.getElementById("slider_image_id").style.height = '150px';
-				var gallery = mui('.mui-slider');
-				gallery.slider({
-  					interval:1000//自动轮播周期，若为0则不自动播放，默认为0；
-				});
-				});
-				
-				
-				
-				
 				/*
 				 * 访问服务器拿到json
 				 */
 				function jsonNewsRequest(url, params,up_or_down) {
 					var classid = params.classid;
-					var passage_number = params.passage_number;
-					console.log(passage_number);
+					var upOrdown = params.upOrdown;
+					var newsID = params.newsID;
+					var pageSize = params.pagesize;
 					//向服务器发送请求
 					console.log(url);
-					url = url + '?' + 'classid=' + classid + '&' + 'p=' + passage_number;
+					url = url + '?' + 'classid=' + classid + '&' + 'newsID=' + newsID+'&'+'upOrdown='+upOrdown+'&'+'pagesize='+pageSize;
 					console.log(url);
 					mui.ajax(url, {
 						
@@ -167,17 +221,32 @@
 							//服务器返回响应
 							//设置laytpl数据源
 							var passages = analyzeJsonData(data);
-							console.log(passages);
 							var passageTableViewList = document.getElementById("passageTableViewListTPL").innerHTML;
+							
+							var renderPassages = [];
+							var localPassages = localStorage.getItem("passages");
+							console.log(localPassages);
+							if(localPassages !== null)
+							{
+								if(up_or_down == 'up')
+								{
+									renderPassages = passages.concat(localPassages);
+								}else{
+									renderPassages = localPassages.concat(passages);
+								}
+							}else{
+								renderPassages = passages;
+							}
+
 			
-							laytpl(passageTableViewList).render(passages,function(html)
+							laytpl(passageTableViewList).render(renderPassages,function(html)
 							{
 								document.getElementById("passageTableViewListDIV").innerHTML = html;
 							});
 							
 							for(var passage_index = 0; passage_index < 4; ++passage_index)
 							{
-									var passage = passages[passage_index];
+									var passage = renderPassages[passage_index];
 									//处理轮播图片
 									var slider_image_id = 'slider_image_' + passage_index;
 									var slider_text_id = 'slider_text_' + passage_index;
@@ -202,10 +271,13 @@
 							/*
 							 * 新闻本地存储
 							 */
-							localStorage.setItem("passages",passages);
-							localStorage.setItem("latestNewsID",passages[0].NewsID);
+							console.log(renderPassages[renderPassages.length-1].NewsID);
+
+							localStorage.setItem("passages",renderPassages);
+							localStorage.setItem("newestNewsID",renderPassages[0].NewsID);
+							localStorage.setItem("oldestNewsID",renderPassages[renderPassages.length-1].NewsID);
 							
-							if(up_or_down == 'down')
+							if(up_or_down == 'up')
 							{
 								mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
 							}else{
@@ -217,7 +289,7 @@
 						error: function(xhr, type, errorThrown) {
 							//异常处理；
 							console.log(type);
-							if(up_or_down == 'down')
+							if(up_or_down == 'up')
 							{
 								mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
 							}else{
@@ -229,6 +301,12 @@
 						}
 					});
 				}
+				window.addEventListener('refreshDown',function(e)
+				{
+					 scroller[0].pulldownLoading();
+
+				});
+				
 		</script>
 	</body>
 

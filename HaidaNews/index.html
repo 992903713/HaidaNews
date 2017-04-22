@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
     <title></title>
     <script src="js/mui.min.js"></script>
+    <script src="Classes/Others/Request/request.js"></script>
     <link href="css/mui.min.css" rel="stylesheet"/>
     <script type="text/javascript" charset="utf-8">
       	mui.init();
@@ -42,6 +43,9 @@
 		var subpages = ['Classes/Home/home.html','Classes/News_Collection/news_collection.html','Classes/Provision/provision.html'];
 		//所有的plus-*方法写在mui.plusReady中或者后面。
 		mui.plusReady(function() {
+			
+
+			
 			//获取当前页面所属的Webview窗口对象
 			var self = plus.webview.currentWebview();
 			for (var i = 0; i < subpages.length; i++) {
@@ -88,17 +92,23 @@
 			});
 			
 		var main = null;
-		var mainstart = false;
-		var showmain = false;
+		var mainstart = window.mainstart;
+		var showmain = window.showmain;
+		if(showmain == null && mainstart==null)
+		{
+			showmain = false;
+			mainstart = false;
+		}
 		var	wc=plus.webview.create("Classes/LeftList/leftList.html","leftList",{top:"0",bottom:"0",width:"50%"});
 
 		function showSide(){
 			// 防止快速点击可能导致多次创建
+
+
 			main = plus.webview.getWebviewById(plus.runtime.appid);
 			if(!mainstart){
 				main.addEventListener('maskClick',showSide);
 				mainstart=true;
-				
 			}
 			if(showmain){
 				
@@ -111,7 +121,8 @@
 					});
 
 				wc.hide();
-				showmain = false
+//				plus.webview.close(wc);
+				showmain = false;
 			}
 			else
 			{
@@ -119,6 +130,7 @@
 				// 侧滑页面加载后显示（避免白屏）
 				showmain = true;
 				wc.show('slide-in-left',200);
+//				plus.webview.open(wc);
 				main.setStyle({
 						mask: 'rgba(0,0,0,0.2)',
 						//left: '70%',
@@ -129,8 +141,13 @@
 				
 				
 			}
-		}
 
+
+		}
+			window.addEventListener('refresh', function(e) {  
+				var homePage = plus.webview.getWebviewById(subpages[0]);
+				mui.fire(homePage,'refreshDown');
+    		});
 </script>
 	
 </body>

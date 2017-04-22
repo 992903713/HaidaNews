@@ -1,13 +1,15 @@
 var baseRequestAdress = 'http://www.catas.cn';
-var jsonRequestAdress = baseRequestAdress + '/appList/getNextPage';
+var jsonRequestAdress = baseRequestAdress + '/appList/getUpOrDownData';
 var modelNameAdress = baseRequestAdress + '/newdefault/getClassName';
-
 
 function modelNameNewsRequest(url,params)
 {
 	
 }
-
+function reloadData()
+{
+	
+}
 /*
  * 解析json
  */
@@ -38,11 +40,14 @@ function passageModel(passage)
 	{
 		for (var i = 0; i < arr.length ; i++) {
   			var src = arr[i].match(srcReg);
-  			console.log(src[1]);
 		}
 	}
 	//此处留下一个bug，一篇文章可能有多张图片
 	this.News_picture = (src == undefined)? null:src[1];
+	if(this.News_picture !== null && this.News_picture[1] == 'u')
+	{
+		this.News_picture = baseRequestAdress + this.News_picture;
+	}
 	this.News_Freind = passage.News_Freind;//这里json拼写错误
 	this.News_Link = passage.News_Link;
 	this.News_Click = passage.News_Click;
