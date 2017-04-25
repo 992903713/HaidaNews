@@ -42,8 +42,10 @@ function passageModel(passage)
   			var src = arr[i].match(srcReg);
 		}
 	}
+
 	//此处留下一个bug，一篇文章可能有多张图片
 	this.News_picture = (src == undefined)? null:src[1];
+
 	if(this.News_picture !== null && this.News_picture[1] == 'u')
 	{
 		this.News_picture = baseRequestAdress + this.News_picture;
