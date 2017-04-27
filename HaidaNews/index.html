@@ -14,10 +14,7 @@
     </script>
 </head>
 <body>
-	<header class="mui-bar mui-bar-nav">
-	    <a class="mui-icon mui-icon-list" id="leftList"></a>
-	    <h1 class="mui-title">首页</h1>
-	</header>
+
 		<nav class="mui-bar mui-bar-tab" id="nav_tab">
     		<a class="mui-tab-item mui-active" href="Classes/Home/home.html">
     			<span class="mui-icon mui-icon-home"></span>
@@ -54,7 +51,7 @@
 					subpages[i], //子页url
 					subpages[i], //子页id
 					{
-						top: '45px',//设置距离顶部的距离
+						top: '0px',//设置距离顶部的距离
 						bottom: '50px'//设置距离底部的距离
 					}
 				);
@@ -68,7 +65,7 @@
 		});
 		
 		//当前激活选项
-		var activeTab = subpages[Index],title=document.querySelector(".mui-title");
+		var activeTab = subpages[Index];
 		//选项卡点击事件
 		mui('.mui-bar-tab').on('tap', 'a', function(e) {
 			//获取目标子页的id
@@ -76,8 +73,7 @@
 			if (targetTab == activeTab) {
 				return;
 			}
-			//更换标题
-			title.innerHTML = this.querySelector('.mui-tab-label').innerHTML;
+
 			//显示目标选项卡
 			plus.webview.show(targetTab);
 			//隐藏当前选项卡
@@ -86,68 +82,7 @@
 			activeTab = targetTab;
 		});
 		
-		document.getElementById("leftList").addEventListener('tap',function () {
-				//更多
-				showSide();
-			});
-			
-		var main = null;
-		var mainstart = window.mainstart;
-		var showmain = window.showmain;
-		if(showmain == null && mainstart==null)
-		{
-			showmain = false;
-			mainstart = false;
-		}
-		var	wc=plus.webview.create("Classes/LeftList/leftList.html","leftList",{top:"0",bottom:"0",width:"50%"});
-
-		function showSide(){
-			// 防止快速点击可能导致多次创建
-
-
-			main = plus.webview.getWebviewById(plus.runtime.appid);
-			if(!mainstart){
-				main.addEventListener('maskClick',showSide);
-				mainstart=true;
-			}
-			if(showmain){
-				
-				main.setStyle({
-					mask: 'none',
-					left: '0',
-					transition: {
-						duration: 100
-					}
-					});
-
-				wc.hide();
-//				plus.webview.close(wc);
-				showmain = false;
-			}
-			else
-			{
-				// 创建侧滑页面
-				// 侧滑页面加载后显示（避免白屏）
-				showmain = true;
-				wc.show('slide-in-left',200);
-//				plus.webview.open(wc);
-				main.setStyle({
-						mask: 'rgba(0,0,0,0.2)',
-						//left: '70%',
-						transition: {
-							duration: 150
-						}
-				});
-				
-				
-			}
-
-
-		}
-			window.addEventListener('refresh', function(e) {  
-				var homePage = plus.webview.getWebviewById(subpages[0]);
-				mui.fire(homePage,'refreshDown');
-    		});
+		
 </script>
 	
 </body>

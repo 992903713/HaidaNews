@@ -6,25 +6,92 @@
 		<title></title>
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/swiper-3.4.2.min.css" rel="stylesheet"/>
+		<style>
+			
+            .swiper-container {
+            		margin-top: 44px;
+                height: 180px;
+            }
+            .swiper-container img {
+                height: 150px;
+                width: 100%;
+            }
+            .swiper-pagination {
+                margin-bottom: 20px;
+            };
+
+		</style>
 	</head>
 
 	<body>
 		<script src="../../js/mui.min.js"></script>
 		<script src="../Others/Request/request.js"></script>
 		<script src="../../js/laytpl.js"></script>
+		<script src="../../js/swiper-3.4.2.min.js"></script>
+		<header class="mui-bar mui-bar-nav">
+	    		<a class="mui-icon mui-icon-bars" id="leftList"></a>
+	    		<h1 	class="mui-title" id="headerTitle">首页</h1>
+		</header>
+		
+		/*
+		 * 视图层嵌套：顶层下拉刷新（图片轮播+新闻列表)
+		 */
+		
+		
+		<div class="mui-content">
+			<!--下拉刷新容器-->
+			<div id="refreshContainer" class="mui-content mui-scroll-wrapper">
+  				<div class="mui-scroll">
+    					<!--数据列表-->
+    					<ul class="mui-table-view mui-table-view-chevron">
+    						<!--图片轮播-->
+  						<div id="imageSliderDIV"></div>
+ 						<!--新闻列表 -->
+						<div id="passageTableViewListDIV"></div>
+    					</ul>
+  				</div>
+			</div>
+		</div>
+		<!-- 处理图片轮播-->
+		<script id="imageSliderTPL" type="text/html">
+			<div class="swiper-container">
+                 <div class="swiper-wrapper" id="swiperTest">
+                 	{{# for(var newsIndex = 0; newsIndex < d.length; ++newsIndex){}}
+                     <div class="swiper-slide">
+                    		<a  href="#" id="{{newsIndex}}">
+                        		<img src="../Others/Images/blank.png" data-src="{{d[newsIndex].News_Picture}}" id="test"/>
+                        </a>
+                            <div style="height: 30px;width: 100%; font-size: 14px; background-color: black; opacity: 0.5; color: white;">{{d[newsIndex].News_Title}}</div>
+                     </div>
+                     {{#}}}
+                 </div>
+                 <div class="swiper-pagination"></div>
+            </div>	
+		</script>
+		<!-- 处理新闻列表-->
+		<script id="passageTableViewListTPL" type="text/html">
+					<ul class="mui-table-view">
+						{{# for(var newsIndex = 4; newsIndex < d.length; ++newsIndex){ }}
+								<li class="mui-table-view-cell mui-media ">
+									<a class="mui-navigate-right" href="javascript:;" id="{{newsIndex}}">
+										<img class="mui-media-object mui-pull-left" src="../Others/Images/blank.png" data-src="{{d[newsIndex].News_Picture}}">
+										<div class="mui-media-body" id="div_{{newsIndex}}" style="font-size: 12px;">
+											{{
+												d[newsIndex].News_Title
+											}}
+											<p>{{d[newsIndex].News_Author}}    {{d[newsIndex].News_Time}}</p>
+										</div>
+									</a>
+									
+								</li>
+							
+						{{# } }}  			
+					</ul>
+				</script>
 		<script type="text/javascript">
 			var scroller = [];
-			var newestNewsID = localStorage.getItem("newestNewsID");//当前最新新闻ID，默认为0
-			if(newestNewsID == null)
-			{
-				newestNewsID = 0;
-			}
-			
-			var oldestNewsID = localStorage.getItem("oldestNewsID");//当前最旧新闻ID
-			if(oldestNewsID == null)
-			{
-				oldestNewsID = 0;
-			}
+		
 			mui.init(
 				{
 					pullRefresh: {
@@ -47,26 +114,32 @@
 					}
 				}
 			);
-			
-
 			function pull_down_fresh_function() 
 			{
 				if(scroller.length == 0)
 				{
 					scroller.push(this);
 				}
+				
      			//业务逻辑代码，比如通过ajax从服务器获取新数据；
      			//注意，加载完新数据后，必须执行如下代码，注意：若为ajax请求，则需将如下代码放置在处理完ajax响应数据之后
      			var currentClassID = localStorage.getItem('classid');
      			if(currentClassID == null)
      			{
-     				currentClassID = '34';
+     				currentClassID = '4';
      				localStorage.setItem('classid',currentClassID);
      			}
+     			var newestNewsID = localStorage.getItem("newestNewsID");//当前最新新闻ID，默认为0
+				if(newestNewsID == null)
+				{
+					newestNewsID = 0;
+				}
+			
+
      			var params = {
 				"classid":currentClassID,
 				"upOrdown":"up",
-				"pagesize":"25",
+				"pagesize":"15",
 				"newsID":newestNewsID
      			};
 				jsonNewsRequest(jsonRequestAdress,params,'up');
@@ -74,129 +147,100 @@
 			function pull_up_fresh_function()
 			{
 				var currentClassID = localStorage.getItem('classid');
+				var oldestNewsID = localStorage.getItem("oldestNewsID");//当前最旧新闻ID
+				if(oldestNewsID == null)
+				{
+					oldestNewsID = 0;
+				}
 				var params = {
 					"classid":currentClassID,
 					"upOrdown":"down",
-					"pagesize":"25",
+					"pagesize":"10",
 					"newsID":oldestNewsID,
 				};
 				jsonNewsRequest(jsonRequestAdress,params,'down');
 			}
 			
 		</script>
-		
-		/*
-		 * 视图层嵌套：顶层下拉刷新（图片轮播+新闻列表)
-		 */
-		
-		
-		<div class="mui-content">
-			<!--下拉刷新容器-->
-			<div id="refreshContainer" class="mui-content mui-scroll-wrapper">
-  				<div class="mui-scroll">
-    					<!--数据列表-->
-    					<ul class="mui-table-view mui-table-view-chevron">
-    						<!--图片轮播-->
-      					<div class="mui-slider" id="slider_image_id">
-  							<div class="mui-slider-group mui-slider-loop">
-    								<!--支持循环，需要重复图片节点-->
-    								<div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img id="slider_image_duplicate_end" src="../Others/Images/blank.png" /><p id="slider_text_duplicate_end"></p></a></div>
-    								<div class="mui-slider-item"><a href="#"><img id="slider_image_0"  src="../Others/Images/blank.png"/><p id="slider_text_0"></p></a></div>
-    								<div class="mui-slider-item"><a href="#"><img id="slider_image_1" src="../Others/Images/blank.png" /><p id="slider_text_1"></p></a></div>
-    								<div class="mui-slider-item"><a href="#"><img id="slider_image_2"  src="../Others/Images/blank.png"/><p id="slider_text_2"></p></a></div>
-    								<div class="mui-slider-item"><a href="#"><img id="slider_image_3"  src="../Others/Images/blank.png"/><p id="slider_text_3"></p></a></div>
-    								<!--支持循环，需要重复图片节点-->
-    								<div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img id="slider_image_duplicate_start"  /><p id="slider_text_duplicate_start"></p></a></div>
-  							</div>
-  							<!--轮播指示器-->
-  							<div class="mui-slider-indicator">  
-                				<div class="mui-indicator mui-active"></div>  
-                				<div class="mui-indicator"></div>  
-                				<div class="mui-indicator"></div>  
-                				<div class="mui-indicator"></div>  
-            					</div>  
-							</div>
-							<!--新闻列表 -->
-							<div id="passageTableViewListDIV"></div>
-    					</ul>
-  				</div>
-			</div>
-		</div>
-
-			
-		<!-- 处理新闻列表-->
-		<script id="passageTableViewListTPL" type="text/html">
-					<ul class="mui-table-view">
-						{{# for(var newsIndex = 4; newsIndex < d.length; ++newsIndex){ }}
-								<li class="mui-table-view-cell mui-media ">
-									<a class="mui-navigate-right passage_cell" href="javascript:;" id="{{newsIndex}}">
-										<img class="mui-media-object mui-pull-left" src="{{ d[newsIndex].News_picture}}">
-										<div class="mui-media-body">
-											{{
-												d[newsIndex].News_Title
-											}}
-										</div>
-									</a>
-									
-								</li>
-							
-						{{# } }}  			
-					</ul>
-				</script>
-		
 		<script type="text/javascript" charset="UTF-8">
+			var main = null;
+			var leftWebView = null;
+			var	showmain = false;
+			var	mainstart = false;
+
 			mui.plusReady(function()
 			{
+				document.getElementById("leftList").addEventListener('tap',function () {
+				//更多
+				showSide();
+			});
+	    		/*
+		 	* 更换新闻类别，刷新列表
+		 	*/
+			window.addEventListener('refresh', function() { 
+				var classid = event.detail.classid;
+				var currentClassid = localStorage.getItem('classid');
+				if(currentClassid !== classid)
+				{
+					localStorage.setItem('newestNewsID','0');
+					localStorage.setItem('oldestNewsID','0');
+					localStorage.setItem("passages",null);
+				}
+				localStorage.setItem('classid',classid);
+
+				showSide();
+				showmain = false;
 				
-				document.getElementById("slider_image_id").style.height = '150px';
-				var gallery = mui('.mui-slider');
-				gallery.slider({
-  					interval:1000//自动轮播周期，若为0则不自动播放，默认为0；
-				});
-				});
-//				console.log(newestNewsID);
-//				console.log(oldestNewsID);
-				/*
-				 * 新闻数据总数组
-				 */
-//				var total_passages = [];
-//				/*
-//				 * 1.查找新闻缓存，有则加载
-//				 */
-//				total_passages = localStorage.getItem("passages");
-//				if(total_passages !== null)
-//				{
-//					var passageTableViewList = document.getElementById("passageTableViewListTPL").innerHTML;
-//			
-//							laytpl(passageTableViewList).render(total_passages,function(html)
-//							{
-//								document.getElementById("passageTableViewListDIV").innerHTML = html;
-//							});
-//							
-//							for(var passage_index = 0; passage_index < 4; ++passage_index)
-//							{
-//									var passage = total_passages[passage_index];
-//									//处理轮播图片
-//									var slider_image_id = 'slider_image_' + passage_index;
-//									var slider_text_id = 'slider_text_' + passage_index;
-//									document.getElementById(slider_image_id).src = passage.News_picture;
-//									document.getElementById(slider_text_id).innerText = passage.News_Title;
-//
-//									if(passage_index == 0 )
-//									{
-//										document.getElementById('slider_image_duplicate_start').src = passage.News_picture;
-//										document.getElementById('slider_text_duplicate_start').innerText = passage.News_Title;
-//
-//									}
-//									if(passage_index == 3)
-//									{
-//										document.getElementById('slider_image_duplicate_end').src = passage.News_picture;
-//										document.getElementById('slider_text_duplicate_end').innerText = passage.News_Title;
-//
-//									}
-//								
-//							}
-//				}
+				scroller[0].pulldownLoading();
+    			});
+    			leftWebView=plus.webview.create("../LeftList/leftList.html","leftList",{top:"0",bottom:"0",width:"60%"});
+			main = plus.webview.getWebviewById(plus.runtime.appid);
+			main.addEventListener('maskClick',showSide);
+			
+			var headerTitle = document.getElementById('headerTitle');
+			//返回顶部
+			headerTitle.addEventListener('tap',function(e)
+			{
+				e.stopPropagation();
+				mui('#refreshContainer').pullRefresh().scrollTo(0, 0, 1000);//滚动到顶部
+				window.scrollTo(0, 1000);
+			});
+			
+			function showSide(){
+			// 防止快速点击可能导致多次创建
+//			main = plus.webview.getWebviewById(plus.runtime.appid);
+//			if(!mainstart){
+//				main.addEventListener('maskClick',showSide);
+//				mainstart=true;
+//			}
+				if(showmain){
+					main.setStyle({
+						mask: 'none',
+						left: '0',
+						transition: {
+							duration: 100
+						}
+					});
+					leftWebView.hide();
+					showmain = false;
+				}else{
+					// 创建侧滑页面
+					// 侧滑页面加载后显示（避免白屏）
+					showmain = true;
+					leftWebView.show('slide-in-left',200);
+					main.setStyle({
+						mask: 'rgba(0,0,0,0.2)',
+						//left: '70%',
+						transition: {
+							duration: 150
+						}
+					});
+				}
+			}
+		});
+
+
+
 				
 				/*
 				 * 2.刷新页面，向服务器拉取最新数据
@@ -206,16 +250,14 @@
 				 */
 				function jsonNewsRequest(url, params,up_or_down) {
 					var classid = params.classid;
-					console.log(classid);
 					var upOrdown = params.upOrdown;
 					var newsID = params.newsID;
+//					console.log(newsID);
+//					console.log(classid);
 					var pageSize = params.pagesize;
 					//向服务器发送请求
-					console.log(url);
 					url = url + '?' + 'classid=' + classid + '&' + 'newsID=' + newsID+'&'+'upOrdown='+upOrdown+'&'+'pagesize='+pageSize;
-					console.log(url);
 					mui.ajax(url, {
-						
 						dataType: 'json', //服务器返回json格式数据
 						type: 'get', //HTTP请求类型
 						timeout: 10000, //超时时间设置为10秒；
@@ -226,15 +268,19 @@
 							var passages = analyzeJsonData(data);
 							if(passages.length == 0)
 							{
-								mui.toast('暂无更新数据');
-								mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+								if(upOrdown == 'up')
+								{
+									mui.toast('暂无更新数据');
+									mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+								}else{
+									mui.toast('暂无更多数据');
+									mui('#refreshContainer').pullRefresh().endPullupToRefresh();
+								}
+
 								return;
-							}
-							
-							var passageTableViewList = document.getElementById("passageTableViewListTPL").innerHTML;
-							
+							}							
 							var localPassages = JSON.parse(localStorage.getItem("passages"));
-//							console.log(localPassages);
+							
 							if(localPassages !== null)
 							{
 								if(up_or_down == 'up')
@@ -246,43 +292,34 @@
 							}else{
 								localPassages = passages;
 							}
-							newestNewsID = localPassages[0].NewsID;
-							oldestNewsID = localPassages[localPassages.length-1].NewsID;
+
 							/*
 							 * 新闻本地存储
 							 */
 							localStorage.setItem("passages",JSON.stringify(localPassages));
+							localStorage.setItem("newestNewsID",localPassages[0].NewsID);
+							localStorage.setItem("oldestNewsID",localPassages[localPassages.length-1].NewsID);
 							
+							var length = localPassages.length;
+							console.log(length);
+							var passageTableViewList = document.getElementById("passageTableViewListTPL").innerHTML;
+							var imageSlider = document.getElementById("imageSliderTPL").innerHTML;
 							laytpl(passageTableViewList).render(localPassages,function(html)
 							{
 								document.getElementById("passageTableViewListDIV").innerHTML = html;
 							});
-							
-							for(var passage_index = 0; passage_index < 4; ++passage_index)
+							laytpl(imageSlider).render(localPassages.slice(0,4),function(html)
 							{
-									var passage = localPassages[passage_index];
-									//处理轮播图片
-									var slider_image_id = 'slider_image_' + passage_index;
-									var slider_text_id = 'slider_text_' + passage_index;
-									document.getElementById(slider_image_id).src = passage.News_picture;
-									document.getElementById(slider_text_id).innerText = passage.News_Title;
-
-									if(passage_index == 0 )
-									{
-										document.getElementById('slider_image_duplicate_start').src = passage.News_picture;
-										document.getElementById('slider_text_duplicate_start').innerText = passage.News_Title;
-
-									}
-									if(passage_index == 3)
-									{
-										document.getElementById('slider_image_duplicate_end').src = passage.News_picture;
-										document.getElementById('slider_text_duplicate_end').innerText = passage.News_Title;
-
-									}
-								
-							}
+								document.getElementById("imageSliderDIV").innerHTML = html;
+							});
 							
-					
+							var  swiperTest = document.getElementById('swiperTest');
+ 							var mySwiper = new Swiper('.swiper-container', {
+                                autoplay: 2500,/*自动播放时间间隔 单位ms*/
+                                pagination : '.swiper-pagination', /*添加分页*/
+                                loop: true, /*开启循环*/
+                           	});
+                           
 
 							if(up_or_down == 'up')
 							{
@@ -308,23 +345,23 @@
 						}
 					});
 				}
-				/*
-				 * 新闻列表点击事件
-				 */
-				mui("ul").on('tap','.passage_cell',function()
-				{
-					
-					var localPassages = JSON.parse(localStorage.getItem("passages"));
-
-					var passageDetail = plus.webview.create('passageDetail.html','passageDetail.html',{},{passage:localPassages[this.id]});
-					passageDetail.show();
-				})
 				
-				window.addEventListener('refreshDown',function(e)
+				/*
+				 * 新闻列表,轮播图片点击事件
+				 */
+				mui("ul").on('tap','a',function()
 				{
-					 scroller[0].pulldownLoading();
+					var localPassages = JSON.parse(localStorage.getItem("passages"));
+					if(this.id >= 4){
+						document.getElementById("div_"+this.id).style.color = "grey";//设置浏览过的新闻节点颜色
 
+					}
+					var passageDetail = plus.webview.create('passageDetail.html','passageDetail',{},{passage:localPassages[this.id]});
+					passageDetail.show();
 				});
+
+				
+
 				
 		</script>
 	</body>

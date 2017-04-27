@@ -10,6 +10,7 @@
 
 	<body>
 		<script src="../../js/mui.min.js"></script>
+		<script src="../Others/Request/request.js"></script>
 		<script type="text/javascript">
 			mui.init()
 		</script>
@@ -19,16 +20,38 @@
 		</header>
 		
 		
-		<div class="mui-content" id="main_content"></div>
+		<div class="mui-content" id="main_content">
+			<textarea id="template" style="display: none;"></textarea>
+		</div>
 		<script type="text/javascript">
 			mui.plusReady(function()
 			{
 				var current = plus.webview.currentWebview();
-				console.log(current.passage.News_Content);
-				document.getElementById("main_content").innerHTML = current.passage.News_Content;
 				document.getElementById('title').innerHTML = current.passage.News_Title;
-				
-				
+				var localPassageContent = localStorage.getItem(current.passage.NewsID);
+				if(localPassageContent != null)
+				{
+					document.getElementById("template").value = localPassageContent;
+
+				}else{				
+					var url = passageDetailRequestAdress + current.passage.NewsID;
+					mui.ajax(url,{
+						dataType: 'json', //服务器返回json格式数据
+							type: 'get', //HTTP请求类型
+							timeout: 10000, //超时时间设置为10秒；
+							headers: { 'Content-Type': 'application/json' },
+							success: function(data) {
+								document.getElementById("main_content").innerHTML = data.News_Content;
+								localStorage.setItem(current.passage.NewsID,data.News_Content);
+							},
+							error: function(xhr, type, errorThrown) {
+								//异常处理；
+								console.log(type);
+								mui.toast('网络连接超时');
+
+						}
+					});
+				}
 
 			});
 			function back()

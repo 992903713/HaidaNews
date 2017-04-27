@@ -1,15 +1,12 @@
 var baseRequestAdress = 'http://www.catas.cn';
 var jsonRequestAdress = baseRequestAdress + '/appList/getUpOrDownData';
 var modelNameAdress = baseRequestAdress + '/newdefault/getClassName';
-
+var passageDetailRequestAdress = baseRequestAdress + '/appDetail/IndexJson/';
 function modelNameNewsRequest(url,params)
 {
 	
 }
-function reloadData()
-{
-	
-}
+
 /*
  * 解析json
  */
@@ -31,25 +28,25 @@ function passageModel(passage)
 	this.News_Title = passage.News_Title;
 	this.News_Author = passage.News_Author;
 	this.News_Content = passage.News_Content;
-	//匹配图片
-	var imgReg = /<img.*?(?:>|\/>)/gi;
-	//匹配src属性 
-	var srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
-	var arr = this.News_Content.match(imgReg);
-	if(arr !== null)
-	{
-		for (var i = 0; i < arr.length ; i++) {
-  			var src = arr[i].match(srcReg);
-		}
-	}
-
-	//此处留下一个bug，一篇文章可能有多张图片
-	this.News_picture = (src == undefined)? null:src[1];
-
-	if(this.News_picture !== null && this.News_picture[1] == 'u')
-	{
-		this.News_picture = baseRequestAdress + this.News_picture;
-	}
+//	//匹配图片
+//	var imgReg = /<img.*?(?:>|\/>)/gi;
+//	//匹配src属性 
+//	var srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
+//	var arr = this.News_Content.match(imgReg);
+//	if(arr !== null)
+//	{
+//		for (var i = 0; i < arr.length ; i++) {
+//			var src = arr[i].match(srcReg);
+//		}
+//	}
+//
+//	//此处留下一个bug，一篇文章可能有多张图片
+//	this.News_picture = (src == undefined)? null:src[1];
+//
+//	if(this.News_picture !== null && this.News_picture[1] == 'u')
+//	{
+//		this.News_picture = baseRequestAdress + this.News_picture;
+//	}
 	this.News_Freind = passage.News_Freind;//这里json拼写错误
 	this.News_Link = passage.News_Link;
 	this.News_Click = passage.News_Click;
@@ -72,4 +69,11 @@ function passageModel(passage)
 	this.bz2 = passage.bz2;
 	this.bz3 = passage.bz3;
 	this.bz4 = passage.bz4;
+}
+
+function passagesClassIdModel(newestNewsID,oldestNewsID,passages)
+{
+	this.newestNewsID = newestNewsID;
+	this.oldestNewsID = oldestNewsID;
+	this.passages = passages;
 }

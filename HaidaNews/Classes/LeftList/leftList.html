@@ -7,10 +7,20 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<link href="../../css/mui.min.css" rel="stylesheet" />
 		<style>
-			li {margin:0; padding:0; list-sytle:none;height: 70px;}
-			li a{line-height: 50px;}
-			li img{height:50px; padding: 5px;}
-			li a span {
+			/*li {margin:0; padding:0; list-sytle:none;line-height: 8%;}*/
+			/*li a{line-height: 50px;}*/
+			li div{
+				padding:10px; 
+				
+			}
+			.mui-table-view-cell > a:not(.mui-btn).mui-active {
+  				background-color: #EC971F;
+			}
+			/*li img{
+				height: 50px;
+				padding: 5px;
+			}*/
+			/*li a span {
 				background: #7dc5eb;
     				display: block;
     				float: left;
@@ -27,7 +37,7 @@
     				line-height: 30px;
     				margin-right: 10px;
     				margin-top:10px;
-    			}
+    			}*/
 		</style>
 	</head>
 
@@ -41,97 +51,66 @@
 		<div class="mui-content">
 			<ul class="mui-table-view ">
 				<li class="mui-table-view-cell mui-media">
-					<img src="../Others/Images/academy_icon.jpg">
-				    <div class="mui-media-body">中国热带农业科学院</div>
-
+					<img class="mui-media-object mui-pull-left" src="../Others/Images/academy_icon.jpg">
+				    <div class="mui-media-body" >
+				    	<p class="mui-ellipsis" style="font-size: 10px; color: #555555;">	中国热带农业科学院</p>
+				    </div>
 				</li>
 				<li class="mui-table-view-cell mui-media">
 					<a href="javascript:;" class="mui-navigate-right" onclick="showPassages('4')">
-						<img src="../images/setting.png">
-						 <div class="mui-media-body">重要新闻</div>
+						<img class="mui-media-object mui-pull-left" src="../Others/Images/blank.png">
+						 <div class="mui-media-body" id="4">重要新闻</div>
 					</a>
 				</li>
 				<li class="mui-table-view-cell mui-media">
 					<a href="javascript:;" class="mui-navigate-right" onclick="showPassages('9')">
-						<img src="../images/setting.png">
-						 <div class="mui-media-body">媒体报道</div>
+						<img class="mui-media-object mui-pull-left" src="../Others/Images/blank.png">
+						 <div class="mui-media-body" id="9">媒体报道</div>
 					</a>
 				</li>
 				<li class="mui-table-view-cell mui-media">
 					<a href="javascript:;" class="mui-navigate-right" onclick="showPassages('17')">
-						<img src="../images/setting.png">
-						 <div class="mui-media-body">通知公告</div>
+						<img class="mui-media-object mui-pull-left" src="../Others/Images/blank.png">
+						 <div class="mui-media-body" id="17">通知公告</div>
 					</a>
 				</li>
 				<li class="mui-table-view-cell mui-media">
 					<a href="javascript:;" class="mui-navigate-right" onclick="showPassages('44')">
-						<img src="../images/setting.png">
-						 <div class="mui-media-body">院所动态</div>
+						<img class="mui-media-object mui-pull-left" src="../Others/Images/blank.png">
+						 <div class="mui-media-body" id="44">院所动态</div>
 					</a>
 				</li>
 				<li class="mui-table-view-cell mui-media">
 					<a href="javascript:;" class="mui-navigate-right" onclick="showPassages('230')">
-						<img src="../images/setting.png">
-						 <div class="mui-media-body">热区热点</div>
+						<img class="mui-media-object mui-pull-left" src="../Others/Images/blank.png">
+						 <div class="mui-media-body" id="230">热区热点</div>
 					</a>
 				</li>
 				<li class="mui-table-view-cell mui-media">
 					<a href="javascript:;" class="mui-navigate-right" onclick="showPassages('362')">
-						<img src="../images/setting.png">
-						 <div class="mui-media-body">学术活动</div>
+						<img class="mui-media-object mui-pull-left" src="../Others/Images/blank.png">
+						 <div class="mui-media-body" id="362">学术活动</div>
 					</a>
 				</li>
 			</ul>
 		</div>
 
 		<script type="text/javascript">
-			
+			var currentLi_id = '4';
+			document.getElementById(currentLi_id).style.color = "cornflowerblue";
 			function showPassages(classid)
 			{
-				var leftList = plus.webview.currentWebview();
-			
-				var main = null;
-				// 防止快速点击可能导致多次创建
-				main = plus.webview.getWebviewById(plus.runtime.appid);
-				var showmain = window.showmain;
-				var mainstart = window.mainstart;
-				if(showmain == null )
+				if(currentLi_id !== classid)
 				{
-					showmain = true;
-				}
-				console.log(showmain);
-				if(showmain){
-				
-					main.setStyle({
-						mask: 'none',
-						left: '0',
-						transition: {
-							duration: 100
-						}
-					});
-					leftList.hide();
-					showmain = false;
-					localStorage.setItem('classid',classid);
-					
-					var list = plus.webview.currentWebview().opener();
-					mui.fire(list,'refresh');
-					
+					document.getElementById(currentLi_id).style.color = "black";
+					currentLi_id = classid;
+					document.getElementById(currentLi_id).style.color = "cornflowerblue";
 				}
 				
-//				else{
-//					// 创建侧滑页面
-//					// 侧滑页面加载后显示（避免白屏）
-//					showmain = true;
-//					leftList.show('slide-in-left',200);
-//					main.setStyle({
-//						mask: 'rgba(0,0,0,0.2)',
-//						//left: '70%',
-//						transition: {
-//							duration: 150
-//						}
-//					});
-//				}
-
+				var list = plus.webview.currentWebview().opener();
+				mui.fire(list,'refresh',{
+					'classid':classid,
+				});
 			}
 		</script>
 	</body>
