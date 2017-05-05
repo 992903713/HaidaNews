@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<style type="text/css">
+			.mui-grid-view.mui-grid-9 .mui-table-view-cell{
+				padding: 5px 5px 5px 5px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<script src="../../js/mui.min.js"></script>
+		<header class="mui-bar mui-bar-nav">
+	    		<h1 	class="mui-title" id="headerTitle">菜单</h1>
+		</header>
+		<div class="mui-content">
+			<ul class='mui-table-view mui-grid-view mui-grid-9'>
+				<li class='mui-table-view-cell mui-media mui-col-xs-6 mui-col-sm-3'>
+					<a href='#' style="background-color: #6eac4d;" id="72">
+						<img src="../Others/Images/Menu/g1.png">
+						<div class='mui-media-body' style="color: white;">科研机构</div>
+					</a>
+				</li>
+				<li class='mui-table-view-cell mui-media mui-col-xs-6 mui-col-sm-3'>
+					<a href='#' style="background-color: #a98c4f;" id="75">
+						<img src="../Others/Images/Menu/g2.png">
+						<div class='mui-media-body' style="color: white;">管理机构</div>
+					</a>
+				</li>
+				<li class='mui-table-view-cell mui-media mui-col-xs-6 mui-col-sm-3'>
+					<a href='#' style="background-color: #5695ac;" id="">
+						<img src="../Others/Images/Menu/g3.png">
+						<div class='mui-media-body' style="color: white;">附属机构</div>
+					</a>
+				</li>
+				<li class='mui-table-view-cell mui-media mui-col-xs-6 mui-col-sm-3'>
+					<a href='#' style="background-color: #59aba0;" id="">
+						<img src="../Others/Images/Menu/g4.png">
+						<div class='mui-media-body' style="color: white;">科研平台</div>
+					</a>
+				</li>
+				<li class='mui-table-view-cell mui-media mui-col-xs-6 mui-col-sm-3'>
+					<a href='#' style="background-color: #a64c7e;" id="429">
+						<img src="../Others/Images/Menu/g5.png">
+						<div class='mui-media-body' style="color: white;">数据库</div>
+					</a>
+				</li>
+				<li class='mui-table-view-cell mui-media mui-col-xs-6 mui-col-sm-3'>
+					<a href='#' style="background-color: #a8ae4e;" id="">
+						<img src="../Others/Images/Menu/g6.png">
+						<div class='mui-media-body' style="color: white;">院区风光</div>
+					</a>
+				</li>
+			</ul>
+		</div>
+		
+		<script type="text/javascript">
+			mui.init()
+		</script>
+		
+		<script type="text/javascript">
+			mui.plusReady(function()
+			{
+				mui("ul").on('tap','a',function()
+				{
+					var title = this.text.replace(/\s/ig,'');
+					var menuList = plus.webview.create('menuList.html','menuList',{},{linkclass:this.id,title:title});
+					menuList.show();
+				});
+			});
+			
+		</script>
+	</body>
+
+</html>

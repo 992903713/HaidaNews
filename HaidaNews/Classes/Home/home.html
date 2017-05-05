@@ -29,15 +29,16 @@
 		<script src="../Others/Request/request.js"></script>
 		<script src="../../js/laytpl.js"></script>
 		<script src="../../js/swiper-3.4.2.min.js"></script>
+		
 		<header class="mui-bar mui-bar-nav">
 	    		<a class="mui-icon mui-icon-bars" id="leftList"></a>
 	    		<h1 	class="mui-title" id="headerTitle">首页</h1>
+	    		<a class="mui-icon mui-icon-search mui-pull-right" id="rightSearch"></a>
 		</header>
 		
 		/*
 		 * 视图层嵌套：顶层下拉刷新（图片轮播+新闻列表)
 		 */
-		
 		
 		<div class="mui-content">
 			<!--下拉刷新容器-->
@@ -60,7 +61,7 @@
                  	{{# for(var newsIndex = 0; newsIndex < d.length; ++newsIndex){}}
                      <div class="swiper-slide">
                     		<a  href="#" id="{{newsIndex}}">
-                        		<img src="../Others/Images/blank.png" data-src="{{d[newsIndex].News_Picture}}" id="test"/>
+                        		<img src="{{d[newsIndex].news_first_pic}}" id="test"/>
                         </a>
                             <div style="height: 30px;width: 100%; font-size: 14px; background-color: black; opacity: 0.5; color: white;">{{d[newsIndex].News_Title}}</div>
                      </div>
@@ -72,15 +73,19 @@
 		<!-- 处理新闻列表-->
 		<script id="passageTableViewListTPL" type="text/html">
 					<ul class="mui-table-view">
-						{{# for(var newsIndex = 4; newsIndex < d.length; ++newsIndex){ }}
+						{{# for(var newsIndex = 0; newsIndex < d.length; ++newsIndex){ }}
 								<li class="mui-table-view-cell mui-media ">
-									<a class="mui-navigate-right" href="javascript:;" id="{{newsIndex}}">
-										<img class="mui-media-object mui-pull-left" src="../Others/Images/blank.png" data-src="{{d[newsIndex].News_Picture}}">
-										<div class="mui-media-body" id="div_{{newsIndex}}" style="font-size: 12px;">
+									<a  href="javascript:;" id="{{newsIndex}}" style="padding-right: 0px;">
+										{{# if(d[newsIndex].News_picture !== null){ }}
+										
+										<img class="mui-media-object mui-pull-left" src="{{d[newsIndex].News_picture}}">
+										{{#}}}
+										<div class="mui-media-body" id="div_{{newsIndex}}" style="font-size: 14px;white-space:normal;">
+											
 											{{
 												d[newsIndex].News_Title
 											}}
-											<p>{{d[newsIndex].News_Author}}    {{d[newsIndex].News_Time}}</p>
+											<p style="font-size: 12px;">{{d[newsIndex].News_Author}}    {{d[newsIndex].News_Time}}</p>
 										</div>
 									</a>
 									
@@ -133,6 +138,7 @@
 				if(newestNewsID == null)
 				{
 					newestNewsID = 0;
+					localStorage.setItem("newestNewsID",newestNewsID);
 				}
 			
 
@@ -151,6 +157,8 @@
 				if(oldestNewsID == null)
 				{
 					oldestNewsID = 0;
+					localStorage.setItem("oldestNewsID",oldestNewsID);
+
 				}
 				var params = {
 					"classid":currentClassID,
@@ -167,7 +175,9 @@
 			var leftWebView = null;
 			var	showmain = false;
 			var	mainstart = false;
+			
 
+			
 			mui.plusReady(function()
 			{
 				document.getElementById("leftList").addEventListener('tap',function () {
@@ -185,6 +195,7 @@
 					localStorage.setItem('newestNewsID','0');
 					localStorage.setItem('oldestNewsID','0');
 					localStorage.setItem("passages",null);
+					localStorage.setItem("sliderPassages",null);
 				}
 				localStorage.setItem('classid',classid);
 
@@ -240,7 +251,6 @@
 		});
 
 
-
 				
 				/*
 				 * 2.刷新页面，向服务器拉取最新数据
@@ -248,6 +258,7 @@
 				/*
 				 * 访问服务器拿到json
 				 */
+				
 				function jsonNewsRequest(url, params,up_or_down) {
 					var classid = params.classid;
 					var upOrdown = params.upOrdown;
@@ -265,7 +276,7 @@
 						success: function(data) {
 							//服务器返回响应
 							//设置laytpl数据源
-							var passages = analyzeJsonData(data);
+							var passages = analyzePassageModelData(data);
 							if(passages.length == 0)
 							{
 								if(upOrdown == 'up')
@@ -301,38 +312,85 @@
 							localStorage.setItem("oldestNewsID",localPassages[localPassages.length-1].NewsID);
 							
 							var length = localPassages.length;
-							console.log(length);
 							var passageTableViewList = document.getElementById("passageTableViewListTPL").innerHTML;
-							var imageSlider = document.getElementById("imageSliderTPL").innerHTML;
 							laytpl(passageTableViewList).render(localPassages,function(html)
 							{
 								document.getElementById("passageTableViewListDIV").innerHTML = html;
 							});
-							laytpl(imageSlider).render(localPassages.slice(0,4),function(html)
-							{
-								document.getElementById("imageSliderDIV").innerHTML = html;
+							
+							/*
+							 * 处理图片轮播
+							 */
+							var sliderPassageUrl = sliderPassageAdress + '?'+'classid='+classid+'&'+'pagesize=4';
+							mui.ajax(sliderPassageUrl,{
+								dataType: 'json', //服务器返回json格式数据
+								type: 'get', //HTTP请求类型
+								timeout: 10000, //超时时间设置为10秒；
+								headers: { 'Content-Type': 'application/json' },
+								success: function(data) {
+									var sliderPassages = analyzePassageModelData(data);
+									localStorage.setItem("sliderPassages",JSON.stringify(sliderPassages));
+									var imageSlider = document.getElementById("imageSliderTPL").innerHTML;
+
+									laytpl(imageSlider).render(sliderPassages,function(html)
+									{
+										document.getElementById("imageSliderDIV").innerHTML = html;
+									});
+									var  swiperTest = document.getElementById('swiperTest');
+ 									var mySwiper = new Swiper('.swiper-container', {
+                               			autoplay: 2500,/*自动播放时间间隔 单位ms*/
+                                			pagination : '.swiper-pagination', /*添加分页*/
+                                			loop: true, /*开启循环*/
+                           			});
+                           			if(up_or_down == 'up')
+									{
+										mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+									}else{
+										mui('#refreshContainer').pullRefresh().endPullupToRefresh();
+
+									}
+
+								},error: function(xhr, type, errorThrown) {
+									//异常处理；
+									console.log(type);
+//									mui.toast('网络连接超时');
+								}
 							});
 							
-							var  swiperTest = document.getElementById('swiperTest');
- 							var mySwiper = new Swiper('.swiper-container', {
-                                autoplay: 2500,/*自动播放时间间隔 单位ms*/
-                                pagination : '.swiper-pagination', /*添加分页*/
-                                loop: true, /*开启循环*/
-                           	});
-                           
 
-							if(up_or_down == 'up')
-							{
-								mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
-							}else{
-								mui('#refreshContainer').pullRefresh().endPullupToRefresh();
-
-							}
 
 						},
 						error: function(xhr, type, errorThrown) {
 							//异常处理；
 							console.log(type);
+							var localPassages = JSON.parse(localStorage.getItem("passages"));
+							var sliderPassages = JSON.parse(localStorage.getItem("sliderPassages"));
+							console.log(localPassages);
+							if(localPassages !== null)
+							{
+								var passageTableViewList = document.getElementById("passageTableViewListTPL").innerHTML;
+								laytpl(passageTableViewList).render(localPassages,function(html)
+								{
+									document.getElementById("passageTableViewListDIV").innerHTML = html;
+								});
+							}
+							if(sliderPassages !== null)
+							{
+								var imageSlider = document.getElementById("imageSliderTPL").innerHTML;
+
+									laytpl(imageSlider).render(sliderPassages,function(html)
+									{
+										document.getElementById("imageSliderDIV").innerHTML = html;
+									});
+									var  swiperTest = document.getElementById('swiperTest');
+ 									var mySwiper = new Swiper('.swiper-container', {
+                               			autoplay: 2500,/*自动播放时间间隔 单位ms*/
+                                			pagination : '.swiper-pagination', /*添加分页*/
+                                			loop: true, /*开启循环*/
+                           			});
+							}
+							
+							
 							if(up_or_down == 'up')
 							{
 								mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
@@ -352,6 +410,11 @@
 				mui("ul").on('tap','a',function()
 				{
 					var localPassages = JSON.parse(localStorage.getItem("passages"));
+					if(localPassages == null)
+					{
+						mui.toast('当前无网络连接');
+						return;
+					}
 					if(this.id >= 4){
 						document.getElementById("div_"+this.id).style.color = "grey";//设置浏览过的新闻节点颜色
 

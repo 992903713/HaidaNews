@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-icon mui-icon-back" id="back" href="javascript:;" onclick="back()"></a>
+	    		<h1 class="mui-title" id="title"></h1>
+		</header>
+		
+		<script type="text/javascript">
+			mui.plusReady(function()
+			{
+				var current = plus.webview.currentWebview();
+				var menuListModel = current.menuListModel;
+				document.getElementById('title').innerHTML = menuListModel.linkName;
+			});
+			function back()
+			{
+				plus.webview.currentWebview().hide();
+
+			}
+		</script>
+	</body>
+
+</html>

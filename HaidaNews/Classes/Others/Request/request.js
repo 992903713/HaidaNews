@@ -1,16 +1,13 @@
 var baseRequestAdress = 'http://www.catas.cn';
-var jsonRequestAdress = baseRequestAdress + '/appList/getUpOrDownData';
-var modelNameAdress = baseRequestAdress + '/newdefault/getClassName';
-var passageDetailRequestAdress = baseRequestAdress + '/appDetail/IndexJson/';
-function modelNameNewsRequest(url,params)
-{
-	
-}
-
+var jsonRequestAdress = baseRequestAdress + '/appList/getUpOrDownData';//获取新闻json
+var modelNameAdress = baseRequestAdress + '/newdefault/getClassName';//获取模块名称
+var passageDetailRequestAdress = baseRequestAdress + '/appDetail/IndexJson/';//获取新闻具体内容
+var passageImageAdress = baseRequestAdress+'/uploadfiles/smallpic/';//获取新闻
+var sliderPassageAdress = baseRequestAdress + '/appList/getScorllPic';//获取轮播图片，此处拼写错误
 /*
  * 解析json
  */
-function analyzeJsonData(data)
+function analyzePassageModelData(data)
 {
 	var passages = [];
 	for (var passageIndex = 0; passageIndex < data.length; ++ passageIndex) {
@@ -45,7 +42,13 @@ function passageModel(passage)
 //
 //	if(this.News_picture !== null && this.News_picture[1] == 'u')
 //	{
-//		this.News_picture = baseRequestAdress + this.News_picture;
+	if(passage.bz4.length > 0)
+	{
+		this.News_picture = passageImageAdress + passage.bz4;
+	}else{
+		this.News_picture = null;
+	}
+	console.log(this.News_picture);
 //	}
 	this.News_Freind = passage.News_Freind;//这里json拼写错误
 	this.News_Link = passage.News_Link;
@@ -61,7 +64,12 @@ function passageModel(passage)
 	this.UserID = passage.UserID;
 	this.News_AdminID = passage.News_AdminID;
 	this.Title_Color = passage.Title_Color;
-	this.news_first_pic = passage.news_first_pic;
+	if(passage.news_first_pic.length > 0)
+	{
+		this.news_first_pic = passageImageAdress + passage.news_first_pic;
+	}else{
+		this.news_first_pic = null;
+	}
 	this.Class_Name = passage.Class_Name;
 	this.sub_class_name = passage.sub_class_name;
 	this.news_second_class = passage.news_second_class;
@@ -71,9 +79,29 @@ function passageModel(passage)
 	this.bz4 = passage.bz4;
 }
 
-function passagesClassIdModel(newestNewsID,oldestNewsID,passages)
+function menuListModel(menuList)
 {
-	this.newestNewsID = newestNewsID;
-	this.oldestNewsID = oldestNewsID;
-	this.passages = passages;
+	this.linkId = menuList.linkId;
+	this.orderId = menuList.orderId;
+	this.linkName = menuList.linkName;
+	this.linkUrl = menuList.linkUrl;
+	this.linkTarget = menuList.linkTarget;
+	this.linkPic = menuList.linkPic;
+	this.linkClass = menuList.linkClass;
+	this.linkSm = menuList.linkSm;
+	this.linkBz1 = menuList.linkBz1;
+	this.linkBz2 = menuList.linkBz2;
+	this.linkBz3 = menuList.linkBz3;
+
+
+}
+function analyzeMenuListModelData(data)
+{
+	var menuLists = [];
+	for (var menuListIndex = 0; menuListIndex < data.length; ++ menuListIndex) {
+		var menuList = data[menuListIndex];
+		var model = new menuListModel(menuList);
+		menuLists.push(model);
+	}
+	return menuLists;
 }
