@@ -60,8 +60,8 @@
                  <div class="swiper-wrapper" id="swiperTest">
                  	{{# for(var newsIndex = 0; newsIndex < d.length; ++newsIndex){}}
                      <div class="swiper-slide">
-                    		<a  href="#" id="{{newsIndex}}">
-                        		<img src="{{d[newsIndex].news_first_pic}}" id="test"/>
+                    		<a  href="#" id="{{newsIndex}}" class="slider">
+                        		<img src="{{d[newsIndex].news_first_pic}}"/>
                         </a>
                             <div style="height: 30px;width: 100%; font-size: 14px; background-color: black; opacity: 0.5; color: white;">{{d[newsIndex].News_Title}}</div>
                      </div>
@@ -263,8 +263,7 @@
 					var classid = params.classid;
 					var upOrdown = params.upOrdown;
 					var newsID = params.newsID;
-//					console.log(newsID);
-//					console.log(classid);
+
 					var pageSize = params.pagesize;
 					//向服务器发送请求
 					url = url + '?' + 'classid=' + classid + '&' + 'newsID=' + newsID+'&'+'upOrdown='+upOrdown+'&'+'pagesize='+pageSize;
@@ -409,7 +408,16 @@
 				 */
 				mui("ul").on('tap','a',function()
 				{
-					var localPassages = JSON.parse(localStorage.getItem("passages"));
+					console.log(this.className);
+					var localPassages = null;
+					if(this.className == 'slider')
+					{
+						localPassages = JSON.parse(localStorage.getItem("sliderPassages"));
+
+					}else{
+						localPassages = JSON.parse(localStorage.getItem("passages"));
+
+					}
 					if(localPassages == null)
 					{
 						mui.toast('当前无网络连接');

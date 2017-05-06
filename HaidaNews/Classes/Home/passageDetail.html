@@ -6,6 +6,21 @@
 		<title></title>
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<style>
+			img{
+				width: 80%;
+				/*margin: 10px;*/
+			}
+			p{
+				color: black;
+				white-space: normal;
+			}
+			div{
+				font-size: 14px;
+				margin: 5px;
+
+			}
+		</style>
 	</head>
 
 	<body>
@@ -16,12 +31,11 @@
 		</script>
 		<header class="mui-bar mui-bar-nav">
 			<a class="mui-icon mui-icon-back" id="back" href="javascript:;" onclick="back()"></a>
-	    		<h1 class="mui-title" id="title"></h1>
+	    		<h1 class="mui-title" id="title" style="font-size: 14px;"></h1>
 		</header>
 		
 		
-		<div class="mui-content" id="main_content" style="background-color: white;">
-			<textarea id="template" style="display: none; "></textarea>
+		<div class="mui-content" id="main_content">
 		</div>
 		<script type="text/javascript">
 			mui.plusReady(function()
@@ -29,20 +43,48 @@
 				var current = plus.webview.currentWebview();
 				document.getElementById('title').innerHTML = current.passage.News_Title;
 				var localPassageContent = localStorage.getItem(current.passage.NewsID);
+
 				if(localPassageContent != null)
 				{
-					document.getElementById("template").value = localPassageContent;
+					document.getElementById("main_content").innerHTML = localPassageContent;
 
 				}else{				
 					var url = passageDetailRequestAdress + current.passage.NewsID;
+					console.log(url);
 					mui.ajax(url,{
 						dataType: 'json', //服务器返回json格式数据
 							type: 'get', //HTTP请求类型
 							timeout: 10000, //超时时间设置为10秒；
 							headers: { 'Content-Type': 'application/json' },
 							success: function(data) {
+								//	//匹配图片
+								//匹配src属性 
+								var srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
+								var reger = new RegExp('src=[\'\"]?([^\'\"]*)[\'\"]?','g');
+								data.News_Content = data.News_Content.replace(reger,function(word)
+								{
+									if(word[5] == '/')
+									{
+										word = word.replace('src=\"','src=\"http://www.catas.cn/');
+										return word;
+									}
+								});
 								document.getElementById("main_content").innerHTML = data.News_Content;
 								localStorage.setItem(current.passage.NewsID,data.News_Content);
+								
+								var imgDoms = document.getElementsByTagName('img');
+								for(var i = 0 ; i < imgDoms.length ; i ++){ 
+									console.log(imgDoms[i].src);
+								}
+//  									if(imgDoms[i].src[0] == 'f')//file://前缀
+//  									{
+//  										var imgSrc = imgDoms[i].src;
+//  										imgSrc = imgSrc.substring(7,imgSrc.length);									
+//
+//  										imgDoms[i].src ='http://www.catas.cn'+imgSrc;
+//  									}
+
+								
 							},
 							error: function(xhr, type, errorThrown) {
 								//异常处理；
@@ -52,6 +94,7 @@
 						}
 					});
 				}
+
 
 			});
 			function back()
