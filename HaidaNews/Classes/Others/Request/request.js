@@ -75,7 +75,6 @@ function menuListModel(menuList)
 	this.linkBz2 = menuList.linkBz2;
 	this.linkBz3 = menuList.linkBz3;
 
-
 }
 function analyzeMenuListModelData(data)
 {
@@ -83,7 +82,8 @@ function analyzeMenuListModelData(data)
 	for (var menuListIndex = 0; menuListIndex < data.length; ++ menuListIndex) {
 		var menuList = data[menuListIndex];
 		var model = new menuListModel(menuList);
-		menuLists.push(model);
+		console.log(model.linkUrl);
+		menuLists.push(model); 
 	}
 	return menuLists;
 }

@@ -55,6 +55,7 @@
 						headers: { 'Content-Type': 'application/json' },
 						success: function(data) {
 							menuLists = analyzeMenuListModelData(data);
+							
 							var menuTableViewList = document.getElementById("menuTableViewListTPL").innerHTML;
 							laytpl(menuTableViewList).render(menuLists,function(html)
 							{

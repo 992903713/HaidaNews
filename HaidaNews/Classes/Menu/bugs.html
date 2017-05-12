@@ -45,15 +45,17 @@
 			mui.plusReady(function()
 			{
 				var current = plus.webview.currentWebview();
-				var menuListModel = current.menuListModel;
-				document.getElementById('title').innerHTML = menuListModel.linkName;
-				mui.ajax(menuListModel.linkUrl,{
+				document.getElementById('title').innerHTML = current.menuListModel.linkName;
+				var linkUrl = current.menuListModel.linkUrl;
+				mui.ajax(linkUrl,{
 					dataType: 'html', //服务器返回html格式数据
 						type: 'get', //HTTP请求类型
 						timeout: 10000, //超时时间设置为10秒；
+//						headers: { 'Content-Type': 'application/html' },
+
 						success: function(data) {
 								//匹配新闻
-						var passageReg = /<a href="[\/\w.]+" title=\"([^\"]*)\" target="_blank">/gi;
+						var passageReg = /(<a href=\"([^\"]*)\" title=\"([^\"]*)\" target="_blank">|<a title=\"([^\"]*)\" href=\"([^\"]*)\" target="_blank">|<a href=\"([^\"]*)\" target="_blank" title=\"([^\"]*)\">)/gi;
 						//匹配href属性 
 						var hrefReg = /href=[\'\"]?([^\'\"]*)[\'\"]?/i;
 						//匹配title属性
@@ -63,12 +65,18 @@
 						if(arr !== null)
 						{
 							for (var i = 0; i < arr.length ; i++) {
-							var href = arr[i].match(hrefReg);
-							var title = arr[i].match(titleReg);
-							var friendList = new friendListModel();
-							friendList.listDetailUrl = menuListModel.linkUrl + href[1];
-							friendList.title = title[1];
-							renderArray.push(friendList);
+								var href = arr[i].match(hrefReg);
+								var title = arr[i].match(titleReg);
+								var friendList = new friendListModel();
+								
+								if(linkUrl == 'http://www.catas.cn/pzs')
+								{
+									linkUrl = 'http://www.catas.cn';
+								}
+								
+								friendList.listDetailUrl = linkUrl + href[1];
+								friendList.title = title[1];
+								renderArray.push(friendList);
 							
 							}
 						}
@@ -82,7 +90,7 @@
 						},error: function(xhr, type, errorThrown) {
 									//异常处理；
 									console.log(type);
-//									mui.toast('网络连接超时');
+									mui.toast('网络连接超时');
 						}
 				});
 				
@@ -102,7 +110,6 @@
 			mui("ul").on('tap','a',function()
 			{
 				var friendListModel = renderArray[this.id];
-				console.log(renderArray.length);
 				var menuList = plus.webview.create('bugsDetail.html','bug',{},{friendListModel:friendListModel});
 				menuList.show();
 			});
