@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<style>
+			div .mui-card-header{
+				padding: 0px;
+				height: 80px;
+			}
+			div .mui-card-content{
+				padding: 0px;
+				height: 100px;
+			}
+			#card img{
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../Others/Request/request.js"></script>
+		<script src="../../js/laytpl.js"></script>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-icon mui-icon-back" id="back" href="javascript:;" onclick="back()"></a>
+	    		<h1 class="mui-title" id="title"></h1>
+		</header>
+
+		<!--<script id="menuTableViewListTPL" type="text/html">
+						{{# for(var newsIndex = 0; newsIndex < d.length; ++newsIndex){ }}
+								<li class="mui-table-view-cell mui-media ">
+									<a  href="javascript:;" id="{{newsIndex}}" style="padding-right: 0px;">
+										<div class="mui-media-body" id="div_{{newsIndex}}" style="font-size: 14px;white-space:normal;">
+											{{
+												d[newsIndex].linkName
+											}}
+										</div>
+									</a>
+								</li>
+						{{# } }}  			
+		</script>-->
+		
+		
+		<script type="text/javascript">
+			var menuLists = [];
+			mui.plusReady(function()
+			{
+				var current = plus.webview.currentWebview();
+				document.getElementById('title').innerHTML = current.title;
+				mui.toast('暂无机构信息');
+//				var menuListUrl = 'http://www.catas.cn/appList/getfriendLink?linkclass='+current.linkclass;
+//				mui.ajax(menuListUrl,{
+//					dataType: 'json', //服务器返回json格式数据
+//						type: 'get', //HTTP请求类型
+//						timeout: 10000, //超时时间设置为10秒；
+//						headers: { 'Content-Type': 'application/json' },
+//						success: function(data) {
+//							menuLists = analyzeMenuListModelData(data);
+//							
+//							var menuTableViewList = document.getElementById("menuTableViewListTPL").innerHTML;
+//							laytpl(menuTableViewList).render(menuLists,function(html)
+//							{
+//								document.getElementById("menuListDIV").innerHTML = html;
+//							});
+//						},error: function(xhr, type, errorThrown) {
+//							//异常处理；
+//							console.log(type);
+//							mui.toast('网络连接超时');
+//						}
+//				});
+				
+			});
+			function back()
+			{
+				plus.webview.currentWebview().hide();
+
+			}
+			mui("ul").on('tap','a',function()
+			{
+				var menuListModel = menuLists[this.id];
+				var menuList = plus.webview.create('bugs.html','bugs',{},{menuListModel:menuListModel});
+				menuList.show();
+			});
+			
+		</script>
+	</body>
+
+</html>

@@ -6,17 +6,139 @@
 		<title></title>
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<style>
+			/*li {margin:0; padding:0; list-sytle:none;line-height: 8%;}*/
+			/*li a{line-height: 50px;}*/
+			li div{
+				padding:10px ; 
+				
+			}
+
+			li img{
+				height: 20px;
+				padding: 5px 5px 5px 5px;
+			}
+
+		</style>
+		
 	</head>
 
 	<body>
 		<script src="../../js/mui.min.js"></script>
 		<header class="mui-bar mui-bar-nav">
-	    		<h1 	class="mui-title" id="headerTitle">我的</h1>
+	    		<h1 	class="mui-title" id="headerTitle">设置</h1>
 		</header>
-		
+		<div class="mui-content" style="margin-top: 44px;">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell mui-media">
+					<a href="javascript:;" class="mui-navigate-right" onclick="myFavorite()">
+						<img class="mui-media-object mui-pull-left" src="../Others/Images/setting_0003_.png">
+						 <div class="mui-media-body">我的收藏</div>
+					</a>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+						<img class="mui-media-object mui-pull-left" src="../Others/Images/setting_0002_.png">
+						 <div class="mui-media-body" style="float: inherit;">夜间模式</div>
+
+						 	<div id="autoLogin" class="mui-switch" style="float: inherit;">
+                					<div class="mui-switch-handle"></div>
+            					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<a href="javascript:;" class="mui-navigate-right" onclick="clearCaches()">
+						<img class="mui-media-object mui-pull-left" src="../Others/Images/setting_0001_.png">
+						 <div class="mui-media-body" id="clearCaches">清除缓存</div>
+					</a>
+				</li>
+				<!--<li class="mui-table-view-cell mui-media">
+					<a href="javascript:;" class="mui-navigate-right" onclick="aboutUs()">
+						<img class="mui-media-object mui-pull-left" src="../Others/Images/setting_0000_.png">
+						 <div class="mui-media-body">关于中国热带农业科学院</div>
+					</a>
+				</li>-->
+
+
+			</ul>
+		</div>
 		<script type="text/javascript">
 			mui.init()
 		</script>
+		
+		<script type="text/javascript">
+			mui.plusReady(function()
+			{
+//				plus.cache.calculate(function (size)
+//				{
+//					
+//					document.getElementById('clearCaches').innerHTML = '清除缓存 (' + (size/1024/1024).toFixed(2) + 'MB)';
+//
+//				});
+			
+				
+				var isManual = false;//标志按钮最后状态
+				document.getElementById("autoLogin").addEventListener('toggle', function(event) {
+        				isManual=!isManual;
+					console.log(isManual);
+				});
+				
+			});
+			function myFavorite()
+			{
+				mui.toast('该功能暂未开放');
+			}
+			function clearCaches()
+			{
+				plus.nativeUI.showWaiting('处理中...');
+				plus.cache.clear(function(size)
+				{
+					localStorage.clear();
+////					plus.cache.calculate(function (size)
+////					{
+////						document.getElementById('clearCaches').innerHTML = '清除缓存 (' + (size/1024/1024).toFixed(2) + 'MB)';
+////
+////					});
+				});
+				var searchTimer;
+
+				clearTimeout(searchTimer);
+    				searchTimer = setTimeout(function()
+    				{
+					plus.nativeUI.closeWaiting();
+					mui.toast('清理完成');
+    				},800);
+
+//						var views = plus.webview.all();
+//                      for(var i = 0; i < views.length - 1; i++) {
+//                          plus.webview.close(views[i].id);
+//                      }
+//                      
+//                      plus.open('index.html')
+//                      					plus.cache.calculate(function (size)
+//					{
+//						document.getElementById('clearCaches').innerHTML = '清除缓存 (' + (size/1024/1024).toFixed(2) + 'MB)';
+//
+//					});
+//			var views = plus.webview.all(); 
+//			var current = plus.webview.currentWebview().id; 
+//			for(var i=0;i < views.length;++i)  
+//			{
+////				console.log(current+','+views[i].id);
+////				if(views[i].id !== current && views[i].id !== 'HBuilder'){
+//      				plus.webview.close(views[i].id); 
+////  				} 
+//			}
+//			plus.webview.open('/index.html')
+//			var list = plus.webview.currentWebview().opener(); 
+//			mui.fire(list,'refresh');
+			
+		}
+			function aboutUs()
+			{
+				
+			}
+			
+		</script>
+		
 	</body>
 
 </html>

@@ -14,18 +14,20 @@
                 height: 180px;
             }
             .swiper-container img {
-                height: 150px;
+                height: 155px;
                 width: 100%;
             }
+            
             .swiper-pagination {
-                margin-bottom: 20px;
+                margin-bottom: 30px;
             };
 
 		</style>
 	</head>
 
 	<body>
-		<script src="../../js/mui.min.js"></script>
+		<script>var h5pullDown = true;</script>
+		<script src="../../js/mui.js"></script>
 		<script src="../Others/Request/request.js"></script>
 		<script src="../../js/laytpl.js"></script>
 		<script src="../../js/swiper-3.4.2.min.js"></script>
@@ -35,10 +37,7 @@
 	    		<h1 	class="mui-title" id="headerTitle">首页</h1>
 	    		<a class="mui-icon mui-icon-search mui-pull-right" id="rightSearch"></a>
 		</header>
-		
-		/*
-		 * 视图层嵌套：顶层下拉刷新（图片轮播+新闻列表)
-		 */
+
 		
 		<div class="mui-content">
 			<!--下拉刷新容器-->
@@ -60,10 +59,10 @@
                  <div class="swiper-wrapper" id="swiperTest">
                  	{{# for(var newsIndex = 0; newsIndex < d.length; ++newsIndex){}}
                      <div class="swiper-slide">
-                    		<a  href="#" id="{{newsIndex}}" class="slider">
-                        		<img src="{{d[newsIndex].news_first_pic}}"/>
+                    		<a  href="#" id="{{newsIndex}}" class="slider" style="display: block;">
+                        		<img src="{{d[newsIndex].news_first_pic}}" style="vertical-align: bottom;"/>
                         </a>
-                            <div style="height: 30px;width: 100%; font-size: 14px; background-color: black; opacity: 0.5; color: white;">{{d[newsIndex].News_Title}}</div>
+                            <p class="mui-ellipsis" style="height: 25px;width: 100%; font-size: 14px; background-color: black; opacity: 0.5; color: white;">{{d[newsIndex].News_Title}}</p>
                      </div>
                      {{#}}}
                  </div>
@@ -81,11 +80,14 @@
 										<img class="mui-media-object mui-pull-left" src="{{d[newsIndex].News_picture}}">
 										{{#}}}
 										<div class="mui-media-body" id="div_{{newsIndex}}" style="font-size: 14px;white-space:normal;">
-											
 											{{
 												d[newsIndex].News_Title
 											}}
-											<p style="font-size: 12px;">{{d[newsIndex].News_Author}}    {{d[newsIndex].News_Time}}</p>
+											<div style="text-align: left; font-size: 12px; color: darkgray;">{{d[newsIndex].News_Author}}</div>
+											<div>
+												<div style="float:left; width: 50%; text-align: left; font-size: 12px; color: orange;">{{d[newsIndex].News_Time}}</div>
+												<div style="float:left; width: 50%; text-align: right; font-size: 12px; color: orange;">阅读:{{d[newsIndex].News_Click}}&nbsp;</div>
+											</div>
 										</div>
 									</a>
 									
@@ -175,15 +177,25 @@
 			var leftWebView = null;
 			var	showmain = false;
 			var	mainstart = false;
-			
+			localStorage.setItem('newestNewsID','0');
+			localStorage.setItem('oldestNewsID','0');
+			localStorage.setItem("passages",null);
+			localStorage.setItem("sliderPassages",null);
+			localStorage.setItem('classid','4');
 
 			
 			mui.plusReady(function()
 			{
 				document.getElementById("leftList").addEventListener('tap',function () {
-				//更多
-				showSide();
-			});
+					//更多
+					showSide();
+				});
+				document.getElementById("rightSearch").addEventListener('tap',function()
+				{
+					//搜索
+					var searchPassage = plus.webview.create('searchPassage.html','searchPassage');
+					searchPassage.show();
+				});
 	    		/*
 		 	* 更换新闻类别，刷新列表
 		 	*/
@@ -336,7 +348,7 @@
 										document.getElementById("imageSliderDIV").innerHTML = html;
 									});
 									var  swiperTest = document.getElementById('swiperTest');
- 									var mySwiper = new Swiper('.swiper-container', {
+   									var mySwiper = new Swiper('.swiper-container', {
                                			autoplay: 2500,/*自动播放时间间隔 单位ms*/
                                 			pagination : '.swiper-pagination', /*添加分页*/
                                 			loop: true, /*开启循环*/
@@ -382,7 +394,7 @@
 										document.getElementById("imageSliderDIV").innerHTML = html;
 									});
 									var  swiperTest = document.getElementById('swiperTest');
- 									var mySwiper = new Swiper('.swiper-container', {
+   									var mySwiper = new Swiper('.swiper-container', {
                                			autoplay: 2500,/*自动播放时间间隔 单位ms*/
                                 			pagination : '.swiper-pagination', /*添加分页*/
                                 			loop: true, /*开启循环*/
@@ -423,7 +435,7 @@
 						mui.toast('当前无网络连接');
 						return;
 					}
-					if(this.id >= 4){
+					if(this.id >= 0){
 						document.getElementById("div_"+this.id).style.color = "grey";//设置浏览过的新闻节点颜色
 
 					}
@@ -432,7 +444,7 @@
 				});
 
 				
-
+				
 				
 		</script>
 	</body>

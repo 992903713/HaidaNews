@@ -1,0 +1,224 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/jquery-3.2.1.min.js"></script>
+		<script src="../../js/laytpl.js"></script>
+		<script src="../Others/Request/request.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				pullRefresh: {
+						container:"#refreshContainer", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+						up:{
+							height:50,//可选.默认50.触发上拉加载拖动距离
+      						auto:false,//可选,默认false.自动上拉加载一次
+      						contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+      						contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+      						callback :pull_up_fresh_function //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+						}
+					}
+			});
+			function pull_up_fresh_function()
+			{
+				searchPassage(oldestNewsid,10,keyword);				
+			}
+		</script>
+		<header class="mui-bar mui-bar-nav">
+	    		<div style="float:left; width: 85%;"class="mui-input-row mui-search" id="searchForm">
+    				<input type="search" id="searchInput" class="mui-input-clear" placeholder="新闻标题、作者">
+			</div>
+			<div style="float: left;width: 15%;margin-top:10px;margin-bottom: 10px;">
+				&nbsp;<a id="cancelSearch">取消</a>
+
+			</div>
+		</header>
+		<div class="mui-content mui-scroll-wrapper" id="refreshContainer">
+			<div class="mui-scroll">
+				<ul class="mui-table-view">
+					<div id="passageTableViewListDIV"></div>
+				</ul>
+			</div>
+		</div>
+		<!-- 处理新闻列表-->
+		<script id="passageTableViewListTPL" type="text/html">
+				<ul class="mui-table-view">
+						{{# for(var newsIndex = 0; newsIndex < d.length; ++newsIndex){ }}
+								<li class="mui-table-view-cell mui-media ">
+									<a  href="javascript:;" id="{{newsIndex}}" style="padding-right: 0px;">
+										{{# if(d[newsIndex].News_picture !== null){ }}
+										
+										<img class="mui-media-object mui-pull-left" src="{{d[newsIndex].News_picture}}">
+										{{#}}}
+										<div class="mui-media-body" id="div_{{newsIndex}}" style="font-size: 14px;white-space:normal;">
+											{{
+												d[newsIndex].News_Title
+											}}
+											<div style="text-align: left; font-size: 12px; color: darkgray;">{{d[newsIndex].News_Author}}</div>
+											<div>
+												<div style="float:left; width: 50%; text-align: left; font-size: 12px; color: orange;">{{d[newsIndex].News_Time}}</div>
+												<div style="float:left; width: 50%; text-align: right; font-size: 12px; color: orange;">阅读:{{d[newsIndex].News_Click}}&nbsp;</div>
+											</div>
+										</div>
+									</a>
+									
+								</li>
+							
+						{{# } }}  		
+				</ul>
+		</script>
+				
+		
+		
+		<script type="text/javascript">
+			var oldestNewsid = 0;//最后的newsid
+    			var searchPassages = [];//当前搜索结果数组
+    			var keyword = '';//当前的搜索关键字
+			var nativeWebview, imm, InputMethodManager;
+			var initNativeObjects = function() {
+    				if (mui.os.android) {
+        				var main = plus.android.runtimeMainActivity();
+        				var Context = plus.android.importClass("android.content.Context");
+        				InputMethodManager = plus.android.importClass("android.view.inputmethod.InputMethodManager");
+        				imm = main.getSystemService(Context.INPUT_METHOD_SERVICE);
+    				} else {
+        				nativeWebview = plus.webview.currentWebview().nativeInstanceObject();
+    				}
+			};
+			var showSoftInput = function() {
+				nativeWebView = plus.webview.currentWebview().nativeInstanceObject();
+    				if (mui.os.android) {
+    					//强制获得焦点
+    					plus.android.importClass(nativeWebView);
+    					nativeWebView.requestFocus();
+        				imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
+    				} else {
+        				nativeWebview.plusCallMethod({
+            			"setKeyboardDisplayRequiresUserAction": false
+        			});
+    			}
+    			setTimeout(function() {
+       			//此处可写具体逻辑设置获取焦点的input
+       			var inputElem = document.querySelector('input');
+              	inputElem.focus(); 
+   			 }, 200);
+			};
+
+			mui.plusReady(function() {
+    				initNativeObjects();
+    				showSoftInput();
+    				document.querySelector('.mui-scroll-wrapper').addEventListener('scroll', function(e) {
+  					document.activeElement.blur();
+
+				});
+
+    				document.getElementById("cancelSearch").addEventListener('tap',function()
+    				{
+    					plus.webview.currentWebview().hide();
+					document.activeElement.blur();
+    				});
+    				var searchTimer;
+
+    				$('#searchInput').bind('input propertychange',function()
+    				{
+    					if($('#searchInput').val() !=='')
+    					{
+    						console.log( $('#searchInput').val());
+    						oldestNewsid = 0;
+    						searchPassages = [];
+    						clearTimeout(searchTimer);
+    						searchTimer = setTimeout(function()
+    						{
+							//延时搜索
+							keyword = $('#searchInput').val();
+							searchPassage(oldestNewsid,10,keyword);
+    						},800);
+    					}
+    					
+    					
+    				});
+
+			});
+			
+			function searchPassage(newsid,pagesize,key)
+			{
+				var searchPassageUrl = searchPassageAdress + '?newsid='+newsid+'&pagesize='+pagesize+'&key='+key;
+						console.log(searchPassageUrl);
+						mui.ajax(searchPassageUrl,{
+							dataType: 'json', //服务器返回json格式数据
+							type: 'get', //HTTP请求类型
+							timeout: 10000, //超时时间设置为10秒；
+							headers: { 'Content-Type': 'application/json' },
+							beforeSend:function()
+							{	
+								if(newsid == 0)
+								{
+									plus.nativeUI.showWaiting('加载中',{});
+//      								mask.show();//显示遮罩层
+								}
+
+							},
+							complete: function() {
+        							plus.nativeUI.closeWaiting();
+//      							mask.close();//关闭遮罩层
+    							},
+							success: function(data) {
+								if(data.length == 0)
+								{
+									if(oldestNewsid == 0)
+									{
+										var passageTableViewList = document.getElementById("passageTableViewListTPL").innerHTML;
+									laytpl(passageTableViewList).render([],function(html)
+									{
+										document.getElementById("passageTableViewListDIV").innerHTML = html;
+									});
+										mui.toast('暂无搜索结果');
+
+									}else{
+										mui.toast('暂无更多');
+									}
+									
+								}else{
+									var passages = analyzePassageModelData(data);
+									console.log(passages.length);
+									oldestNewsid = passages[passages.length-1].NewsID;
+									searchPassages = searchPassages.concat(passages);
+									console.log(searchPassages.length);
+									var passageTableViewList = document.getElementById("passageTableViewListTPL").innerHTML;
+									laytpl(passageTableViewList).render(searchPassages,function(html)
+									{
+										document.getElementById("passageTableViewListDIV").innerHTML = html;
+									});
+								}
+								mui('#refreshContainer').pullRefresh().endPullupToRefresh();
+
+
+							},error: function(xhr, type, errorThrown) {
+								//异常处理；
+								console.log(type);
+							}
+							});
+			}
+			
+			    mui("ul").on('tap','a',function()
+				{
+					document.activeElement.blur();
+
+					var passageDetail = plus.webview.create('passageDetail.html','passageDetail',{},{passage:searchPassages[this.id]});
+					passageDetail.show();
+				});
+			
+		</script>
+		
+		
+		
+	</body>
+
+</html>

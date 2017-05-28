@@ -4,6 +4,7 @@ var modelNameAdress = baseRequestAdress + '/newdefault/getClassName';//获取模
 var passageDetailRequestAdress = baseRequestAdress + '/appDetail/IndexJson/';//获取新闻具体内容
 var passageImageAdress = baseRequestAdress+'/uploadfiles/smallpic/';//获取新闻
 var sliderPassageAdress = baseRequestAdress + '/appList/getScorllPic';//获取轮播图片，此处拼写错误
+var searchPassageAdress = baseRequestAdress + '/appList/getSearch';
 /*
  * 解析json
  */
@@ -51,7 +52,6 @@ function passageModel(passage)
 	}else{
 		this.news_first_pic = null;
 	}
-	console.log(this.news_first_pic);
 	this.Class_Name = passage.Class_Name;
 	this.sub_class_name = passage.sub_class_name;
 	this.news_second_class = passage.news_second_class;

@@ -21,37 +21,37 @@
 		<div class="mui-content">
 			<ul class='mui-table-view mui-grid-view mui-grid-9'>
 				<li class='mui-table-view-cell mui-media mui-col-xs-6 mui-col-sm-3'>
-					<a href='#' style="background-color: #6eac4d;" id="72">
+					<a href='research_institution.html' style="background-color: #6eac4d;" id="72">
 						<img src="../Others/Images/Menu/g1.png">
 						<div class='mui-media-body' style="color: white;">科研机构</div>
 					</a>
 				</li>
 				<li class='mui-table-view-cell mui-media mui-col-xs-6 mui-col-sm-3'>
-					<a href='#' style="background-color: #a98c4f;" id="75">
+					<a href='manage_institution.html' style="background-color: #a98c4f;" id="75">
 						<img src="../Others/Images/Menu/g2.png">
 						<div class='mui-media-body' style="color: white;">管理机构</div>
 					</a>
 				</li>
 				<li class='mui-table-view-cell mui-media mui-col-xs-6 mui-col-sm-3'>
-					<a href='#' style="background-color: #5695ac;" id="73">
+					<a href='subsidiary_institution.html' style="background-color: #5695ac;" id="73">
 						<img src="../Others/Images/Menu/g3.png">
 						<div class='mui-media-body' style="color: white;">附属机构</div>
 					</a>
 				</li>
 				<li class='mui-table-view-cell mui-media mui-col-xs-6 mui-col-sm-3'>
-					<a href='#' style="background-color: #59aba0;" id="208">
+					<a href='research_platform.html' style="background-color: #59aba0;" id="208">
 						<img src="../Others/Images/Menu/g4.png">
 						<div class='mui-media-body' style="color: white;">科研平台</div>
 					</a>
 				</li>
 				<li class='mui-table-view-cell mui-media mui-col-xs-6 mui-col-sm-3'>
-					<a href='#' style="background-color: #a64c7e;" id="429">
+					<a href='database.html' style="background-color: #a64c7e;" id="429">
 						<img src="../Others/Images/Menu/g5.png">
 						<div class='mui-media-body' style="color: white;">数据库</div>
 					</a>
 				</li>
 				<li class='mui-table-view-cell mui-media mui-col-xs-6 mui-col-sm-3'>
-					<a href='#' style="background-color: #a8ae4e;" id="">
+					<a href='institution_scenery.html' style="background-color: #a8ae4e;" id="">
 						<img src="../Others/Images/Menu/g6.png">
 						<div class='mui-media-body' style="color: white;">院区风光</div>
 					</a>
@@ -69,7 +69,7 @@
 				mui("ul").on('tap','a',function()
 				{
 					var title = this.text.replace(/\s/ig,'');
-					var menuList = plus.webview.create('menuList.html','menuList',{},{linkclass:this.id,title:title});
+					var menuList = plus.webview.create(this.href,'menuList',{},{linkclass:this.id,title:title});
 					menuList.show();
 				});
 			});

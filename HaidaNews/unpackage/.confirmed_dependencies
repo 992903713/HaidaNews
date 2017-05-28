@@ -1,0 +1,120 @@
+{
+  "Classes/Menu/bugsDetail.html": {
+    "href": "Classes/Menu/bugsDetail.html",
+    "resources": [
+      "css/mui.min.css",
+      "js/mui.min.js",
+      "Classes/Others/Request/request.js"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "Classes/Menu/bugs.html": {
+    "href": "Classes/Menu/bugs.html",
+    "resources": [
+      "css/mui.min.css",
+      "js/mui.min.js",
+      "Classes/Others/Request/request.js",
+      "js/laytpl.js"
+    ],
+    "refer": [
+      "Classes/Menu/bugsDetail.html"
+    ],
+    "priority": 0
+  },
+  "Classes/Menu/menuList.html": {
+    "href": "Classes/Menu/menuList.html",
+    "resources": [
+      "css/mui.min.css",
+      "js/mui.min.js",
+      "Classes/Others/Request/request.js",
+      "js/laytpl.js"
+    ],
+    "refer": [
+      "Classes/Menu/bugs.html"
+    ],
+    "priority": 0
+  },
+  "Classes/Menu/menu.html": {
+    "href": "Classes/Menu/menu.html",
+    "resources": [
+      "css/mui.min.css",
+      "js/mui.min.js",
+      "Classes/Others/Images/Menu/g1.png",
+      "Classes/Others/Images/Menu/g2.png",
+      "Classes/Others/Images/Menu/g3.png",
+      "Classes/Others/Images/Menu/g4.png",
+      "Classes/Others/Images/Menu/g5.png",
+      "Classes/Others/Images/Menu/g6.png"
+    ],
+    "refer": [
+      "Classes/Menu/menuList.html"
+    ],
+    "priority": 0
+  },
+  "Classes/Personal/personal.html": {
+    "href": "Classes/Personal/personal.html",
+    "resources": [
+      "css/mui.min.css",
+      "js/mui.min.js"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "Classes/Home/passageDetail.html": {
+    "href": "Classes/Home/passageDetail.html",
+    "resources": [
+      "css/mui.min.css",
+      "js/mui.min.js",
+      "Classes/Others/Request/request.js"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "Classes/LeftList/leftList.html": {
+    "href": "Classes/LeftList/leftList.html",
+    "resources": [
+      "css/mui.min.css",
+      "js/mui.min.js",
+      "Classes/Others/Images/LeftList/topb2.jpg",
+      "Classes/Others/Images/LeftList/_0006_ýýzýýa.png",
+      "Classes/Others/Images/LeftList/_0005_ýýzýýa.png",
+      "Classes/Others/Images/LeftList/_0003_ýýzýýa.png",
+      "Classes/Others/Images/LeftList/_0000_ýýzýýa.png",
+      "Classes/Others/Images/LeftList/_0001_ýýzýýa.png",
+      "Classes/Others/Images/LeftList/_0004_ýýzýýa.png"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "Classes/Home/home.html": {
+    "href": "Classes/Home/home.html",
+    "resources": [
+      "css/mui.min.css",
+      "css/swiper-3.4.2.min.css",
+      "js/mui.js",
+      "Classes/Others/Request/request.js",
+      "js/laytpl.js",
+      "js/swiper-3.4.2.min.js"
+    ],
+    "refer": [
+      "Classes/Home/passageDetail.html",
+      "Classes/LeftList/leftList.html"
+    ],
+    "priority": 0
+  },
+  "index.html": {
+    "href": "index.html",
+    "resources": [
+      "js/mui.min.js",
+      "Classes/Others/Request/request.js",
+      "css/mui.min.css"
+    ],
+    "refer": [
+      "Classes/Menu/menu.html",
+      "Classes/Personal/personal.html",
+      "Classes/Home/home.html"
+    ],
+    "priority": 0
+  }
+}
