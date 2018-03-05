@@ -7,13 +7,10 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<link href="../../css/mui.min.css" rel="stylesheet" />
 		<style>
-			div .mui-card-header{
-				padding: 0px;
-				height: 80px;
-			}
+
 			div .mui-card-content{
 				padding: 0px;
-				height: 100px;
+				height: 150px;
 			}
 			#card img{
 				width: 100%;
@@ -35,79 +32,63 @@
 		</header>
 		<div class="mui-content" id="card">
 			<ul class="mui-table-view">
-				<!--<div id="menuListDIV"></div>-->
-				<li class="mui-table-view-cell">
-					<a>
-						<div class="mui-card" >
-							<div class="mui-card-header" ><img src="pingzisuo.png"></div>
-							<div class="mui-card-content"><img src="pingzisuo_description.png" ></div>
-						</div>
-					</a>
-					
-				</li>
-				<li class="mui-table-view-cell">
-					<a>
-						<div class="mui-card" >
-							<div class="mui-card-header" ><img src="xiangyinsuo.png" ></div>
-							<div class="mui-card-content"><img src="xiangyinsuo_description.png" ></div>
-						</div>
-					</a>
-				</li>
-				<li class="mui-table-view-cell">
-					<a>
-						<div class="mui-card" >
-							<div class="mui-card-header" ><img src="yezisuo.png" ></div>
-							<div class="mui-card-content"><img src="yezisuo_description.png" ></div>
-						</div>
-					</a>
-				</li>
-				
+				<div id="pictureGroupDIV"></div>
 			</ul>
 			
 			
 		</div>
-		<!--<script id="menuTableViewListTPL" type="text/html">
-						{{# for(var newsIndex = 0; newsIndex < d.length; ++newsIndex){ }}
-								<li class="mui-table-view-cell mui-media ">
-									<a  href="javascript:;" id="{{newsIndex}}" style="padding-right: 0px;">
-										<div class="mui-media-body" id="div_{{newsIndex}}" style="font-size: 14px;white-space:normal;">
-											{{
-												d[newsIndex].linkName
-											}}
-										</div>
-									</a>
-								</li>
-						{{# } }}  			
-		</script>-->
+		<script id="pictureGroupTableViewListTPL" type="text/html">
+			{{# for(var groupIndex = 0; groupIndex < d.length; ++groupIndex){ }}
+				<li class="mui-table-view-cell">
+					<a id="{{groupIndex}}">
+						<div class="mui-card" >
+							<div class="mui-card-content"><img src="{{d[groupIndex].FJ}}" ></div>
+							<div class="mui-card-footer">{{d[groupIndex].MC}}</div>
+						</div>
+					</a>
+					
+				</li>
+			{{# } }}  			
+		</script>
 		
 		
 		<script type="text/javascript">
-			var menuLists = [];
+			var pictureGroups = [];
 			mui.plusReady(function()
 			{
 				var current = plus.webview.currentWebview();
 				document.getElementById('title').innerHTML = current.title;
 				
-//				var menuListUrl = 'http://www.catas.cn/appList/getfriendLink?linkclass='+current.linkclass;
-//				mui.ajax(menuListUrl,{
-//					dataType: 'json', //服务器返回json格式数据
-//						type: 'get', //HTTP请求类型
-//						timeout: 10000, //超时时间设置为10秒；
-//						headers: { 'Content-Type': 'application/json' },
-//						success: function(data) {
-//							menuLists = analyzeMenuListModelData(data);
-//							
-//							var menuTableViewList = document.getElementById("menuTableViewListTPL").innerHTML;
-//							laytpl(menuTableViewList).render(menuLists,function(html)
-//							{
-//								document.getElementById("menuListDIV").innerHTML = html;
-//							});
-//						},error: function(xhr, type, errorThrown) {
-//							//异常处理；
-//							console.log(type);
-//							mui.toast('网络连接超时');
-//						}
-//				});
+				var pictureGroupUrl = 'http://www.catas.cn/appList/getPicGroup?xtid=4';
+				mui.ajax(pictureGroupUrl,{
+					dataType: 'json', //服务器返回json格式数据
+						type: 'get', //HTTP请求类型
+						timeout: 10000, //超时时间设置为10秒；
+						headers: { 'Content-Type': 'application/json' },
+						beforeSend:function()
+							{	
+
+									plus.nativeUI.showWaiting('加载中',{});
+
+							},
+							complete: function() {
+        							plus.nativeUI.closeWaiting();
+//      							mask.close();//关闭遮罩层
+    							},
+						success: function(data) {
+							pictureGroups = analyzePictureGroupModelData(data);
+							
+							var pictureGroupTableViewList = document.getElementById("pictureGroupTableViewListTPL").innerHTML;
+							laytpl(pictureGroupTableViewList).render(pictureGroups,function(html)
+							{
+								document.getElementById("pictureGroupDIV").innerHTML = html;
+							});
+						},error: function(xhr, type, errorThrown) {
+							//异常处理；
+							console.log(type);
+							mui.toast('网络连接超时');
+						}
+				});
 				
 			});
 			function back()
@@ -117,9 +98,9 @@
 			}
 			mui("ul").on('tap','a',function()
 			{
-				var menuListModel = menuLists[this.id];
-				var menuList = plus.webview.create('bugs.html','bugs',{},{menuListModel:menuListModel});
-				menuList.show();
+				var pictureGroupModel = pictureGroups[this.id];
+				var scene_list = plus.webview.create('scenery_list.html','scene_list',{},{pictureGroupModel:pictureGroupModel});
+				scene_list.show();
 			});
 			
 		</script>

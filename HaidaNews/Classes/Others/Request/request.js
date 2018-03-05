@@ -1,3 +1,4 @@
+//请求文件
 var baseRequestAdress = 'http://www.catas.cn';
 var jsonRequestAdress = baseRequestAdress + '/appList/getUpOrDownData';//获取新闻json
 var modelNameAdress = baseRequestAdress + '/newdefault/getClassName';//获取模块名称
@@ -87,3 +88,36 @@ function analyzeMenuListModelData(data)
 	}
 	return menuLists;
 }
+
+function pictureGroupModel(pictureGroupModel)
+{
+	this.ID = pictureGroupModel.ID;
+	this.BJR = pictureGroupModel.BJR;
+	this.BJSJ = pictureGroupModel.BJSJ;
+	this.MC = pictureGroupModel.MC;
+	this.FLDM1 = pictureGroupModel.FLDM1;
+	this.FLDM2 = pictureGroupModel.FLDM2;
+	this.FLDM3 = pictureGroupModel.FLDM3;
+	this.FJJS = pictureGroupModel.FJJS;
+	this.FJ = 'http://www.catas.cn/tpk2016/uploadfiles//' + pictureGroupModel.FJ;
+	this.FJ2 = pictureGroupModel.FJ2;
+	this.FJ3 = pictureGroupModel.FJ3;
+	this.FJ4 = pictureGroupModel.FJ4;
+	this.BQ = pictureGroupModel.BQ;
+	this.BZ1 = pictureGroupModel.BZ1;
+	this.BZ2 = pictureGroupModel.BZ2;
+	this.BZ3 = pictureGroupModel.BZ3;
+	this.BZ4 = pictureGroupModel.BZ4;
+
+}
+function analyzePictureGroupModelData(data)
+{
+	var pictureGroups = [];
+	for (var pictureGroupIndex = 0; pictureGroupIndex < data.length; ++ pictureGroupIndex) {
+		var pictureGroup = data[pictureGroupIndex];
+		var model = new pictureGroupModel(pictureGroup);
+		pictureGroups.push(model); 
+	}
+	return pictureGroups;
+}
+
